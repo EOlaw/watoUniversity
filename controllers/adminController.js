@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Administrators = require('../models/adminModel')
 const Department = require('../models/departmentModel');
 const { Course } = require('../models/courseModel');
 const { Announcement } = require('../models/announcementModel');
@@ -13,26 +14,34 @@ const adminControllers = {
   // Create a new user
   createUser: async (req, res) => {
     try {
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.status(201).json(newUser);
+        const user = new User(req.body);
+        await user.setPassword(req.body.password);
+        await user.save();
+        req.login(user, err => {
+          req.flash('success', 'Welcome to Education Website')
+          //res.redirect('/')
+          console.log(user)
+          res.json({ message: 'User registered successfully'})
+        })
     } catch (error) {
+        req.flash('error', err.message);
+        console.log(err)
         res.status(400).json({ error: error.message });
     }
   },
 
   // Get all users
   getAllUsers: async (req, res) => {
-      try {
-          const users = await User.find();
-          res.status(200).json(users);
-      } catch (error) {
-          res.status(500).json({ error: error.message });
-      }
+    try {
+        const users = await User.find();
+        res.status(200).json({ users: users })
+    } catch (err) {
+        res.status(400).json({ error: err.message })
+    }
   },
 
   // Get a single user by ID
-  getUserById: async (req, res) => {
+  getUser: async (req, res) => {
       try {
           const user = await User.findById(req.params.id);
           if (!user) {
@@ -46,7 +55,7 @@ const adminControllers = {
   },
 
   // Update a user by ID
-  updateUserById: async (req, res) => {
+  updateUser: async (req, res) => {
       try {
           const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
           if (!updatedUser) {
@@ -60,7 +69,7 @@ const adminControllers = {
   },
 
   // Delete a user by ID
-  deleteUserById: async (req, res) => {
+  deleteUser: async (req, res) => {
       try {
           const deletedUser = await User.findByIdAndDelete(req.params.id);
           if (!deletedUser) {
@@ -70,6 +79,30 @@ const adminControllers = {
           }
       } catch (error) {
           res.status(400).json({ error: error.message });
+      }
+  },
+  // Block a user
+  blockUser: async (req, res, next) => {
+    try {
+        const blockedUser = await User.findByIdAndUpdate(req.params.id, { isBlocked: true }, { new: true });
+        if (!blockedUser) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+        res.status(200).json(blockedUser)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+  },
+  // Unblock a user
+  unblockUser: async (req, res, next) => {
+      try {
+          const unblockedUser = await User.findByIdAndUpdate(req.params.id, { isBlocked: false }, { new: true });
+          if (!unblockedUser) {
+              return res.status(404).json({ error: 'User not found' })
+          }
+          res.status(200).json(unblockedUser)
+      } catch (error) {
+              res.status(400).json({ error: error.message })
       }
   },
 

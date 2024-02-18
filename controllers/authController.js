@@ -23,21 +23,25 @@ function isAuthenticated(req, res, next) {
 function isAdmin(req, res, next) {
     // Check if user is authenticated
     if (req.isAuthenticated()) {
-        // Retreive the user from the database
+        // Retrieve the user from the database
         User.findById(req.user._id)
             .then((user) => {
-                if (user.isAdmin) {
+                if (user && user.isAdmin) {
+                    // If the user is admin, allow access to the route
                     next();
                 } else {
-                    res.status(403).render('home/auth')
+                    // If the user is not admin, deny access with status 403
+                    //res.status(403).render('home/auth')
+                    res.status(403).send('Access denied. You are not allowed to access.');
                 }
             })
             .catch((err) => {
                 console.error(err);
-                res.status(500).send('Internal Server Error')
-            })
+                res.status(500).send('Internal Server Error');
+            });
     } else {
-        res.redirect('/user/login')
+        // If the user is not authenticated, redirect to the login page
+        res.redirect('/user/login');
     }
 }
 

@@ -8,12 +8,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     mobile: { type: String, required: true, unique: true },
     isAdmin: { type: Boolean, default: false },
-    role: { 
-        type: String,
-        enum: ['admin', 'instructor', 'student'], 
-        default: 'student', 
-        required: true
-    }
+    isAdmin: { type: Boolean, default: false }
 }, { timestamps: true})
 
 userSchema.plugin(passportLocalMongoose)

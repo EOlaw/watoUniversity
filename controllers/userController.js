@@ -27,19 +27,24 @@ const userControllers = {
     },
     // Login Page
     renderLogin: (req, res) => {
-        res.json('IT WORK')
+        res.json('Login Page')
         //res.render('users/login')
     },
     // Login
     loginUser: async (req, res) => {
         req.flash('success', 'welcome back!');
-        const redirectUrl = req.session.returnTo || '/course';
+        const redirectUrl = req.session.returnTo || '/';
         delete req.session.returnTo;
         res.json({ message: 'User logged in successfully', redirectUrl });
         //res.redirect(redirectUrl)
     },
     // Logout
     logout: (req, res) => {
+        // Check if the user is authenticated
+        if (!req.isAuthenticated()) {
+            // If the user is not logged in, send a response indicating that the user must be logged in
+            return res.status(401).json({ error: 'You must be logged in to perform this action' });
+        }
         req.logout((err) => {
             if (err) {
                 // Handle any errors that occur during the logout process
@@ -50,22 +55,14 @@ const userControllers = {
             //res.redirect('/')
         });
     },
-    // Get all users
-    getAllUsers: async (req, res) => {
-        try {
-            const users = await User.find();
-            res.status(200).json({ users: users })
-        } catch (err) {
-            res.status(400).json({ error: error.message })
-        }
-    },
+    
     // Get a single user
     getUser: async (req, res, next) => {
         try {
             const user = await User.findById(req.params.id);
             res.status(200).json(user)
-        } catch (error) {
-            res.status(400).json({ error: error.message })
+        } catch (err) {
+            res.status(400).json({ error: err.message })
         }
     },
     // Update a user
@@ -76,8 +73,8 @@ const userControllers = {
                 return res.status(404).json({ error: 'User not found' })
             }
             res.status(200).json(updatedUser)
-        } catch (error) {
-            res.status(400).json({ error: error.message })
+        } catch (err) {
+            res.status(400).json({ error: err.message })
         }
     },
     // Delete a user
@@ -89,32 +86,8 @@ const userControllers = {
             }
             console.log(deletedUser)
             res.status(200).json(deletedUser)
-        } catch (error) {
-            res.status(400).json({ error: error.message })
-        }
-    },
-    // Block a user
-    blockUser: async (req, res, next) => {
-        try {
-            const blockedUser = await User.findByIdAndUpdate(req.params.id, { isBlocked: true }, { new: true });
-            if (!blockedUser) {
-                return res.status(404).json({ error: 'User not found' })
-            }
-            res.status(200).json(blockedUser)
-        } catch (error) {
-            res.status(400).json({ error: error.message })
-        }
-    },
-    // Unblock a user
-    unblockUser: async (req, res, next) => {
-        try {
-            const unblockedUser = await User.findByIdAndUpdate(req.params.id, { isBlocked: false }, { new: true });
-            if (!unblockedUser) {
-                return res.status(404).json({ error: 'User not found' })
-            }
-            res.status(200).json(unblockedUser)
-        } catch (error) {
-                res.status(400).json({ error: error.message })
+        } catch (err) {
+            res.status(400).json({ error: err.message })
         }
     }
 }

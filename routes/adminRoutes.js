@@ -1,40 +1,62 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controllers/adminController')
+const adminControllers = require('../controllers/adminController')
 const { isAuthenticated, isAdmin } = require('../controllers/authController')
 
 // User Management Routes
-router.post('/users/create', isAuthenticated, isAdmin, adminController.createUser);
-router.get('/users/:id', adminController.getUserById);
-router.get('/users', adminController.getAllUsers);
-router.put('/users/:id/update', adminController.updateUserById);
-router.delete('/users/:id', adminController.deleteUserById);
+router.route('/create')
+    .post(isAuthenticated, isAdmin, adminControllers.createUser)
+router.route('/users')
+    .get(isAuthenticated, isAdmin, adminControllers.getAllUsers)
+router.route('/users/:id')
+    .get(isAuthenticated, isAdmin, adminControllers.getUser)
+    .put(isAuthenticated, isAdmin, adminControllers.updateUser)
+    .delete(isAuthenticated, isAdmin, adminControllers.deleteUser)
+    .put(isAuthenticated, isAdmin, adminControllers.blockUser)
+    .put(isAuthenticated, isAdmin, adminControllers.unblockUser)
 
 // Department Management Routes
-router.post('/departments/create', adminController.createDepartment);
-router.put('/departments/:departmentId/update', adminController.updateDepartment);
-router.get('/departments/:departmentId', adminController.getDepartmentById);
+router.route('/departments/create')
+    .post(isAuthenticated, isAdmin, adminControllers.createDepartment)
+router.route('/departments/:departmentId/update')
+    .put(isAuthenticated, isAdmin, adminControllers.updateDepartment)
+router.route('/departments/:departmentId')
+    .get(isAuthenticated, isAdmin, adminControllers.getDepartmentById)
 
 // Semester and Course Management Routes
-router.post('/courses/create', adminController.createCourse);
-router.put('/courses/:courseId/update', adminController.updateCourse);
-router.get('/courses/:courseId', adminController.getCourseById);
-router.delete('/courses/:courseId', adminController.deleteCourse);
-router.post('/courses/:courseId/schedule/create', adminController.createSchedule);
-router.put('/courses/:courseId/schedule/:scheduleId/update', adminController.updateSchedule);
-router.delete('/courses/:courseId/schedule/:scheduleId/delete', adminController.deleteSchedule);
+router.route('/courses/create')
+    .post(isAuthenticated, isAdmin, adminControllers.createCourse)
+router.route('/courses/:courseId/update')
+    .put(isAuthenticated, isAdmin, adminControllers.updateCourse)
+router.route('/courses/:courseId')
+    .get(isAuthenticated, isAdmin, adminControllers.getCourseById)
+    .delete(isAuthenticated, isAdmin, adminControllers.deleteCourse)
+router.route('/courses/:courseId/schedule/create')
+    .post(isAuthenticated, isAdmin, adminControllers.createSchedule)
+router.route('/courses/:courseId/schedule/:scheduleId')
+    .put(isAuthenticated, isAdmin, adminControllers.updateSchedule)
+    .delete(isAuthenticated, isAdmin, adminControllers.deleteSchedule)
 
 // Events & Announcements Routes
-router.post('/announcements/create', adminController.createAnnouncement);
-router.get('/announcements/:announcementId', adminController.getAnnouncements);
+router.route('/announcements/create')
+    .post(isAuthenticated, isAdmin, adminControllers.createAnnouncement)
+router.route('/annoucements/:annoucementId')
+    .get(isAuthenticated, isAdmin, adminControllers.getAnnouncements)
+
 
 // Resource Allocation Routes
-router.post('/resources/create', adminController.createResource);
-router.get('/resources/:resourceId', adminController.getResources);
+router.route('/resources/create')
+    .post(isAuthenticated, isAdmin, adminControllers.createResource)
+router.route('/resources/:resourceId')
+    .get(isAuthenticated, isAdmin, adminControllers.getResources)
+
 
 // Document Management Routes
-router.post('/documents/upload', adminController.uploadDocument);
-router.get('/documents/:documentId', adminController.getDocuments);
+router.route('/docuements/upload')
+    .post(isAuthenticated, isAdmin, adminControllers.uploadDocument)
+router.route('/documents/:documentId')
+    .get(isAuthenticated, isAdmin, adminControllers.getDocuments)
+
 
 module.exports = router;
 

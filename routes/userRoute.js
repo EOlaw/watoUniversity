@@ -17,13 +17,12 @@ router.route('/login')
 router.route('/logout')
     .get(userControllers.logout)
 
-router.route('/')
-    .get(isAuthenticated, isAdmin, userControllers.getAllUsers)
+//router.route('/')
+    //.get(isAuthenticated, isAdmin, userControllers.getAllUsers)
 
 router.route('/:id')
-    .get(userControllers.getUser)
-    .put(userControllers.updateUser)
-    .put(userControllers.unblockUser)
-    .delete(userControllers.deleteUser)
+    .get(isAuthenticated, isAdmin, userControllers.getUser)
+    .put(isAuthenticated, isAdmin, userControllers.updateUser)
+    .delete(isAuthenticated, userControllers.deleteUser)
     
 module.exports = router;
