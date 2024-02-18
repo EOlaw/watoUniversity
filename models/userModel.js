@@ -8,9 +8,21 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     mobile: { type: String, required: true, unique: true },
     isAdmin: { type: Boolean, default: false },
+    role: { 
+        type: String,
+        enum: ['admin', 'instructor', 'student'], 
+        default: 'student', 
+        required: true
+    }
 }, { timestamps: true})
 
 userSchema.plugin(passportLocalMongoose)
+
+// Create a method to compare the password
+userSchema.methods.isPasswordSame = function(password) {
+    // Use passport-local-mongoose method to compare password
+    return this.authenticate(password);
+}; 
 
 // Create a userSchema methods for isPasswordSame when registering
 
