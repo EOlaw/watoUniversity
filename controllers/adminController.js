@@ -1,5 +1,4 @@
 const User = require('../models/userModel');
-const Administrators = require('../models/adminModel')
 const Department = require('../models/departmentModel');
 const { Course } = require('../models/courseModel');
 const { Announcement } = require('../models/announcementModel');
