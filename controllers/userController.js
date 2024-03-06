@@ -3,8 +3,7 @@ const User = require('../models/userModel')
 const userControllers = {
     // Register Page
     renderRegister: (req, res) => {
-        res.json('Register Page')
-        //res.render('users/register')
+        res.render('users/register')
     },
     // Create a new user
     registerUser: async (req, res, next) => {
@@ -15,9 +14,9 @@ const userControllers = {
             req.login(user, err => {
                 if (err) return next(err);
                 req.flash('success', 'Welcome to Education Website!')
-                //res.redirect('/');
+                res.redirect('/');
                 console.log(user)
-                res.json({ message: 'User registered successfully', user });
+                //res.json({ message: 'User registered successfully', user });
             })
         } catch (err) {
             req.flash('error', err.message);
@@ -27,16 +26,16 @@ const userControllers = {
     },
     // Login Page
     renderLogin: (req, res) => {
-        res.json('Login Page')
-        //res.render('users/login')
+        //res.json('Login Page')
+        res.render('users/login')
     },
     // Login
     loginUser: async (req, res) => {
         req.flash('success', 'welcome back!');
         const redirectUrl = req.session.returnTo || '/';
         delete req.session.returnTo;
-        res.json({ message: 'User logged in successfully', redirectUrl });
-        //res.redirect(redirectUrl)
+        //res.json({ message: 'User logged in successfully', redirectUrl });
+        res.redirect(redirectUrl)
     },
     // Logout
     logout: (req, res) => {
@@ -51,8 +50,8 @@ const userControllers = {
                 console.log(err);
             }
             req.flash('success', 'Goodbye!');
-            res.json('User logged out successfully');
-            //res.redirect('/')
+            //res.json('User logged out successfully');
+            res.redirect('/')
         });
     },
     

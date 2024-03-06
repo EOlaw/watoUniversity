@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const Department = require('../models/departmentModel');
 const { Course } = require('../models/courseModel');
-const { Announcement } = require('../models/announcementModel');
+const Announcement  = require('../models/announcementModel');
 const Resource = require('../models/resourceModel');
 const Document = require('../models/documentModel');
 //const Administrator = require('../models/adminModels');
@@ -125,93 +125,129 @@ const adminControllers = {
     }
   },
 
+  //Get Departments
+  getDepartments: async (req, res, next) => {
+    try {
+      const departments = await Department.find();
+      res.status(200).json({ departments: departments })
+    } catch (err) {
+      res.status(400).json({ error: err.message })
+    }
+  },
+
+  //Get Department
+  getDepartment: async (req, res, next) => {
+    try {
+      const departments = await Department.findById(req.params.id);
+      res.status(200).json({ departments: departments })
+    } catch (err) {
+      res.status(400).json({ error: err.message })
+    }
+  },
+
+  //Update Department
   updateDepartment: async (req, res, next) => {
-      // Implement department update logic
-      try {
-        const departmentId = req.params.departmentId;
-        const updatedDepartment = await Department.findByIdAndUpdate( departmentId, req.body, { new: true } );
-        if (!updatedDepartment) {
-          return res.status(404).json({ error: 'Department not found' });
-        }
-        res.status(200).json(updatedDepartment);
-      } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Error updating department' });
+    try {
+      const updatedDepartment = await Department.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!updatedDepartment) {
+        res.status(404).json({ message: 'Department not found '});
+      } else {
+        res.status(200).json(updatedDepartment)
       }
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
   },
 
-  getDepartmentById: async (req, res, next) => {
-      // Implement department retrieval logic
-      try {
-        const departmentId = req.params.departmentId;
-        const department = await Department.findById(departmentId);
-        if (!department) {
-          return res.status(404).json({ error: 'Department not found.' })
-        }
-        res.status(200).json(department);
-      } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Error fetching department. '})
+  //Delete Department
+  deleteDepartment: async (req, res, next) => {
+    try {
+      const deletedDepartment = await Department.findByIdAndDelete(req.params.id)
+      if (!deletedDepartment) {
+        res.status(404).json({ message: 'Department not found' });
+      } else {
+        res.status(200).json(deletedDepartment)
       }
+    } catch (err) {
+      res.status(400).json({ error: err.message })
+    }
   },
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// SEMESTER AND COURSE MANAGEMENT ////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   //Create Course
   createCourse: async (req, res, next) => {
     // Implement course creation logic
     try {
-      const { courseCode, courseName, instructors, schedules } = req.body;
-      const course = new Course({ courseCode, courseName, instructors, schedules });
+      const course = new Course(req.body)
       const savedCourse = await course.save();
-      res.status(201).json(savedCourse);
+      res.render('courses/createCourse', { course: savedCourse })
+      //res.status(201).json(savedCourse);
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: 'Error creating course' });
+    }
+  },
+  //Get Courses
+  getCourses: async (req, res, next) => {
+    try {
+      const courses = await Course.find();
+      res.render('courses/viewCourses', { courses: courses })
+      //res.status(200).json({ courses: courses })
+    } catch (err) {
+      res.status(400).json({ error: err.message })
+    }
+  },
+  //Get A Course
+  getCourse: async (req, res, next) => {
+    try {
+      const course = await Course.findById(req.params.id);
+      if (!course) {
+        return res.status(404).send({ error: 'Course not found' })
+      }
+      res.render('courses/viewCourse', { course: course })
+      //res.status(200).json({ course: course })
+    } catch (err) {
+      res.status(400).json({ error: err.message })
+    }
+  },
+  editCourse: async (req, res, next) => {
+    try {
+      const course = await Course.findById(req.params.id);
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found' })
+      } else {
+        return res.render('courses/editCourse', { course: course })
+      }
+    } catch (err) {
+      res.status(400).json({ error: err.message })
     }
   },
   //Update Course
   updateCourse: async (req, res, next) => {
       // Implement course update logic
       try {
-        const courseId = req.params.courseId;
-        const updatedCourse = await Course.findByIdAndUpdate( courseId, req.body, { new: true });
+        const updatedCourse = await Course.findByIdAndUpdate( req.params.id , req.body, { new: true });
         if (!updatedCourse) {
           return res.status(404).json({ error: 'Course not found.' })
         }
-        res.status(200).json(updatedCourse)
+        res.redirect(`/admin/course/${req.params.id}`)
+        //res.status(200).json(updatedCourse)
       } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Error updating course.' })
       }
   },
-  //Get Course by ID
-  getCourseById: async (req, res, next) => {
-      // Implement course retrieval logic
-      try {
-        const courseId = req.params.courseId;
-        const course = await Course.findById(courseId);
-        if (!course) {
-          return res.status(404).json({ error: 'Course not found' });
-        }
-        res.status(200).json(course);
-      } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Error fetching course.' })
-      }
-  },
   //Delete Course
   deleteCourse: async (req, res, next) => {
       try {
-        const courseId = req.params.courseId;
-        const deletedCourse = await Course.findByIdAndDelete(courseId);
+        const deletedCourse = await Course.findByIdAndDelete(req.params.id);
         if (!deletedCourse) {
           return res.status(404).json({ error: 'Course not found' });
         }
-        res.status(200).json({ message: 'Course deleted successfully' })
+        res.redirect('/admin/courses')
+        //res.status(200).json({ message: 'Course deleted successfully' })
       } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Error deleting course' });
@@ -220,11 +256,10 @@ const adminControllers = {
   // Create Schedule for Course
   createSchedule: async (req, res, next) => {
       try {
-          const courseId = req.params.courseId;
           const { semester, startDate, endDate, sessions } = req.body;
 
           // Find the course by its ID
-          const course = await Course.findById(courseId);
+          const course = await Course.findById(req.params.id);
           if (!course) {
               return res.status(404).json({ error: 'Course not found.' });
           }
@@ -247,7 +282,7 @@ const adminControllers = {
           const { semester, startDate, endDate, sessions } = req.body;
 
           // Find the course by its ID
-          const course = await Course.findById(courseId);
+          const course = await Course.findById(req.params.id);
           if (!course) {
               return res.status(404).json({ error: 'Course not found.' });
           }
@@ -281,7 +316,7 @@ const adminControllers = {
           const scheduleId = req.params.scheduleId;
 
           // Find the course by its ID
-          const course = await Course.findById(courseId);
+          const course = await Course.findById(req.params.id);
           if (!course) {
               return res.status(404).json({ error: 'Course not found.' });
           }
@@ -312,9 +347,8 @@ const adminControllers = {
   createAnnouncement: async (req, res, next) => {
     // Implement announcement creation logic
     try {
-      const { title, content } = req.body;
-      const announcement = new Announcement({ title, content });
-      const savedAnnouncement = await announcement.save();
+      const announcement = new Announcement(req.body);
+      const savedAnnouncement =await announcement.save()
       res.status(201).json(savedAnnouncement);
     } catch (err) {
       console.log(err);
@@ -325,8 +359,7 @@ const adminControllers = {
   getAnnouncements: async (req, res, next) => {
       // Implement fetching all announcements logic
       try {
-        const announcementId = req.params.announcementId;
-        const announcement = await Announcement.findById(announcementId);
+        const announcement = await Announcement.findById(req.params.id);
         if (!announcement) {
           return res.status(404).json({ error: 'Announcement not found' });
         }

@@ -5,7 +5,6 @@ const User = require('../models/userModel');
 const userControllers = require('../controllers/userController');
 const { isAuthenticated, isAdmin } = require('../controllers/authController');
 
-
 router.route('/register')
     .get(userControllers.renderRegister)
     .post(userControllers.registerUser);

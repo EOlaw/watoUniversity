@@ -1,0 +1,8 @@
+<% layout('layouts/boilerplate')%>
+    <h1>View Courses</h1>
+    <ul>
+        <% courses.forEach(course => { %>
+            <li><a href="/admin/course/<%= course._id %>"><%= course.courseName %></a></li>
+        <% }); %>
+    </ul>
+

@@ -5,10 +5,8 @@ const announcementSchema = new mongoose.Schema({
     content: { type: String, required: true },
     course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
     date: { type: Date, default: Date.now },
-});
+}, { timestamps: true });
 
 const Announcement = mongoose.model('Announcement', announcementSchema);
 
-module.exports =  {
-    Announcement
-}
+module.exports = Announcement

@@ -1,0 +1,14 @@
+<% layout('layouts/boilerplate')%>
+    <h1><%= course.courseName %></h1>
+    <p><%= course.description %></p>
+    <!-- Display other course details here -->
+
+    <!-- Button to edit course -->
+    <a href="/admin/course/<%= course._id %>/edit">Edit</a>
+
+    <!-- Button to delete course -->
+    <form action="/admin/course/<%= course._id %>/delete" method="GET">
+        <button type="submit">Delete</button>
+    </form>
+
+
