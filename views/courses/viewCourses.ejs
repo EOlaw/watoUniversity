@@ -1,8 +1,85 @@
-<% layout('layouts/boilerplate')%>
-    <h1>View Courses</h1>
-    <ul>
-        <% courses.forEach(course => { %>
-            <li><a href="/admin/course/<%= course._id %>"><%= course.courseName %></a></li>
-        <% }); %>
-    </ul>
+<% layout('layouts/boilerplate') %>
+
+<style>
+    /* Remove underline from anchor tags */
+    a {
+        text-decoration: none;
+    }
+    /* Remove bullet points from list items */
+    ul {
+        list-style-type: none;
+        padding: 0; /* Optionally, remove default padding */
+        margin: 0; /* Optionally, remove default margin */
+    }
+</style>
+
+
+<section class="container">
+    <div class="container">
+        <h1 class="my-4">Programs</h1>
+        <hr>
+
+        <div class="row">
+            <!-- Filter courses by tags -->
+            <aside class="col-md-3">
+                <h2>Filter by Tags</h2>
+                <ul>
+                    <% courseTags.forEach(tag => { %>
+                        <li>
+                            <a href="javascript:void(0)" onclick="filterCourses('<%= tag %>')"><%= tag %></a> <hr>
+                        </li>
+                    <% }) %>
+                    
+                </ul>
+            </aside>
+
+            <!-- Display courses -->
+            <div class="col-md-9">
+                <% if (courses.length > 0) { %> 
+                    <div class="row">
+                        <% courses.forEach((course => { %> 
+                            <div class="col-md-3 mb-4 course-card" data-tags="<%= course.tags.join(',') %>">
+                                <div class="card">
+                                    <% if (course.images.length > 0) { %> 
+                                        <img src="<%= course.images[0].url %>" alt="<%= course.courseName %> Image" class="card-img-top course-image">
+                                    <% } else { %>
+                                        <img src="https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg" class="card-img-top product-image" alt="Product Image">
+                                    <% } %>
+                                    <div class="card-body">
+                                        <a href="/admin/course/<%= course._id %>"><h5 class="card-title"><%= course.courseName %></h5></a>
+                                        <p class="card-text"><%= course.description %></p>
+                                        <!-- Add other course details here if needed -->
+                                    </div>
+                                </div>
+                            </div>
+                        <% })) %>
+                    </div>
+                <% } else { %>
+                    <p>No products found.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function filterCourses(tag) {
+        var cards = document.querySelectorAll('.course-card');
+
+        cards.forEach(function(card) {
+            var tags = card.getAttribute('data-tags').split(',');
+            if (tags.includes(tag) || tag === 'all') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+
+
+
+
+
 

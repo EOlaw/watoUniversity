@@ -1,4 +1,5 @@
 const User = require('../models/userModel')
+const Course = require('../models/courseModel')
 
 const userControllers = {
     // Register Page
@@ -31,11 +32,10 @@ const userControllers = {
     },
     // Login
     loginUser: async (req, res) => {
-        req.flash('success', 'welcome back!');
+        req.flash('success', 'Welcome back!');
         const redirectUrl = req.session.returnTo || '/';
-        delete req.session.returnTo;
-        //res.json({ message: 'User logged in successfully', redirectUrl });
-        res.redirect(redirectUrl)
+        delete req.session.returnTo; // Delete after redirection
+        res.redirect(redirectUrl);
     },
     // Logout
     logout: (req, res) => {
@@ -83,11 +83,133 @@ const userControllers = {
             if (!deletedUser) {
                 return res.status(404).json({ error: 'User not found' })
             }
-            console.log(deletedUser)
+            // Also handle removal of enrolled courses when deleting a user
+            await Course.updateMany(
+                { _id: { $in: deletedUser.enrolledCourses } },
+                { $pull: { students: deletedUser._id } }
+            );
             res.status(200).json(deletedUser)
         } catch (err) {
             res.status(400).json({ error: err.message })
         }
+    },
+    viewEnrolledCourse: async (req, res, next) => {
+        try {
+            const userId = req.params.userId;
+            const user = await User.findById(userId).populate('enrolledCourses');
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            res.render('courses/viewEnrolledCourses', { enrolledCourses: user.enrolledCourses })
+        } catch (err) {
+            res.status(500).json({ error: err.message })
+        }
+    },
+    enrolledUserInCourse: async (req, res, next) => {
+        try {
+            // Fetch user and course
+            const userId = req.params.userId;
+            const courseId = req.params.courseId;
+            const user = await User.findById(userId);
+            const course = await Course.findById(courseId);
+
+            // Check if user and course exist
+            if (!user || !course) {
+            return res.status(404).json({ error: 'User or course not found' });
+            }
+
+            // Check if the course is active and has available slots
+            if (course.enrollmentLimit && course.students.length >= course.enrollmentLimit) {
+                return res.status(400).json({ error: 'The course has reached its enrollment limit' })
+            }
+
+            // Proceed with enrollment
+            user.enrolledCourses.push(courseId);
+            course.students.push(userId);
+            await Promise.all([user.save(), course.save()]);
+
+            // Update enrollment limit
+            if (course.enrollmentLimit) {
+                course.enrollmentLimit--;
+                await course.save();
+            }
+  
+            res.redirect(`/user/enrolled-courses/${userId}`);
+            //res.status(200).json({ message: 'Enrollment Successful', user, course })
+        } catch (err) {
+            res.status(400).json({ error: err.message })
+        }
+    },
+    // Mark a course as completed for a User
+    completeCourse: async (req, res, next) => {
+        try {
+            const userId = req.params.userId;
+            const courseId = req.params.courseId;
+    
+            // Fetch the user
+            const user = await User.findById(userId).populate('enrolledCourses');
+            const course = await Course.findById(courseId);
+    
+            if (!user) {
+                return res.status(404).json({ message: 'User Not Found' });
+            }
+    
+            // Remove the course from the user's enrolled courses
+            user.enrolledCourses = user.enrolledCourses.filter(id => id.toString() !== courseId.toString());
+    
+            // Also update the course to remove the student
+            course.students = course.students.filter(id => id.toString() !== userId.toString());
+    
+            await Promise.all([user.save(), course.save()]);
+    
+            // Update enrollment limit
+            if (course.enrollmentLimit) {
+                course.enrollmentLimit++;
+                await course.save();
+            }
+    
+            res.status(200).json({ message: 'Course marked as completed', user, course });
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    },
+    // Route to remove a student from a course
+    removeStudentFromCourse: async (req, res, next) => {
+        try {
+        const courseId = req.params.courseId;
+        const userId = req.params.userId;
+    
+        // Fetch the course
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+    
+        // Fetch the user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+    
+        // Remove the user from the course's students array
+        course.students.pull(userId);
+        await course.save();
+    
+        // Remove the course from the user's enrolledCourses array
+        user.enrolledCourses.pull(courseId);
+        await user.save();
+    
+        // Update the enrollment limit by incrementing it by 1
+        if (course.enrollmentLimit) {
+            course.enrollmentLimit++;
+            await course.save();
+        }
+    
+        res.redirect(`/admin/course/${courseId}`)
+        } catch (err) {
+        res.status(400).json({ error: err.message });
+        }
     }
+  
 }
 module.exports = userControllers

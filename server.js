@@ -10,10 +10,11 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
 const session = require('express-session')
-const flash = require('flash')
+const flash = require('connect-flash')
 const methodOverride = require('method-override')
 const passport = require('passport')
-const passportLocal = require('passport-local')
+const LocalStrategy = require('passport-local')
+const helmet = require('helmet')
 
 const User = require('./models/userModel')
 const dbUrl = process.env.DB_URL
@@ -52,7 +53,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 // Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new passportLocal(User.authenticate()));
+passport.use(new LocalStrategy(User.authenticate()));
+
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -73,6 +75,8 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+//app.use(helmet());
+
 
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;

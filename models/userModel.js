@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     mobile: { type: String, required: true, unique: true },
     isAdmin: { type: Boolean, default: false },
-    isAdmin: { type: Boolean, default: false }
+    isAdmin: { type: Boolean, default: false },
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
 }, { timestamps: true})
 
 userSchema.plugin(passportLocalMongoose)

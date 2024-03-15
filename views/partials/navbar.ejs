@@ -49,28 +49,35 @@
            </button>
        
            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+             <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="/about">ABOUT US</a>
+              </li>
                <li class="nav-item">
                  <a class="nav-link active" aria-current="page" href="/admin/courses">PROGRAMS</a>
                </li>
                <li class="nav-item">
-                 <a class="nav-link active" href="/services">SERVICES</a>
-               </li>
+                <a class="nav-link active" href="/event">EVENTS</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/pages">PAGES</a>
+              </li>
                <li class="nav-item">
-                 <a class="nav-link active" href="/about">ABOUT US</a>
+                 <a class="nav-link active" href="/services">SERVICES</a>
                </li>
                <li class="nav-item">
                  <a class="nav-link active" href="/contact">CONTACT US</a>
                </li>
              </ul>
+
              <ul class="navbar-nav ml-auto">
                <% if(!currentUser) {%>
-               <li class="nav-item">
-                 <a class="nav-link active" href="/user/login">Login</a>
-               </li>
-               <li class="nav-item">
-                 <a class="nav-link active" href="/user/register">Register</a>
-               </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/user/login">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/user/register">Register</a>
+                </li>
                <% } else {%>
                <li class="nav-item">
                  <div class="btn-group">

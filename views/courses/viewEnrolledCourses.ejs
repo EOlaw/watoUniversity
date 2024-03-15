@@ -1,0 +1,28 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Enrolled Courses</h1>
+            <% if (enrolledCourses.length === 0) { %>
+                <p>You are not enrolled in any courses.</p>
+            <% } else { %>
+                <ul class="list-group">
+                    <% enrolledCourses.forEach(function(course) { %>
+                        <li class="list-group-item">
+                            <h3><%= course.courseName %></h3>
+                            <p><%= course.description %></p>
+                            <!-- Add a button/link to remove the course -->
+                            <form action="/user/students/<%= currentUser._id %>/course/<%= course._id %>/remove" method="POST">
+                                <button type="submit" class="btn btn-danger">Remove Course</button>
+                            </form>
+                            <% /* Add other relevant information about the course */ %>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+

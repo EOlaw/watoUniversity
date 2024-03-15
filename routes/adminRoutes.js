@@ -33,12 +33,15 @@ router.route('/courses')
 router.route('/course/:id')
     .get(adminControllers.getCourse)
 router.route('/course/:id/edit')
-    .get(adminControllers.editCourse)
+    .get(isAuthenticated, isAdmin, adminControllers.editCourse)
 router.route('/course/:id/update')
     .put(adminControllers.updateCourse)
 router.route('/course/:id/delete')
     .get(adminControllers.deleteCourse)
     
+router.route('/course/tag/:tag')
+    .get(adminControllers.getCoursesByTag);
+
 router.route('/courses/:id/schedule/create')
     .post(isAuthenticated, isAdmin, adminControllers.createSchedule)
 router.route('/courses/:id/schedule/:scheduleId')
@@ -50,6 +53,7 @@ router.route('/announcements/create')
     .post(isAuthenticated, isAdmin, adminControllers.createAnnouncement)
 router.route('/announcements/:id')
     .get(isAuthenticated, isAdmin, adminControllers.getAnnouncements)
+
 
 
 // Resource Allocation Routes

@@ -1,14 +1,109 @@
-<% layout('layouts/boilerplate')%>
-    <h1><%= course.courseName %></h1>
-    <p><%= course.description %></p>
-    <!-- Display other course details here -->
+<% layout('layouts/boilerplate') %>
 
-    <!-- Button to edit course -->
-    <a href="/admin/course/<%= course._id %>/edit">Edit</a>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1><%= course.courseName %></h1>
+            <p><%= course.description %></p>
+            <ul class="list-group">
+                <% if (course.duration) { %>
+                    <li class="list-group-item">Duration: <%= course.duration %></li>
+                <% } %>
+                <% if (course.location) { %>
+                    <li class="list-group-item">Location: <%= course.location %></li>
+                <% } %>
+                <% if (course.prerequisites.length > 0) { %>
+                    <li class="list-group-item">Prerequisites: <%= course.prerequisites.join(', ') %></li>
+                <% } %>
+                <% if (course.enrollmentLimit) { %>
+                    <li class="list-group-item">Enrollment Limit: <%= course.enrollmentLimit %></li>
+                <% } %>
+                <li class="list-group-item">Status: <%= course.status %></li>
+                <% if (course.instructors.length > 0) { %>
+                    <li class="list-group-item">Instructors: 
+                        <% course.instructors.forEach(function(instructor) { %>
+                            <%= instructor.name %> <% /* Assuming there's a 'name' field for instructors */ %>
+                        <% }) %>
+                    </li>
+                <% } %>
+                <% if (course.schedules.length > 0) { %>
+                    <li class="list-group-item">Schedules: 
+                        <% course.schedules.forEach(function(schedule) { %>
+                            <%= schedule.semester %> (<%= schedule.startDate %> - <%= schedule.endDate %>)
+                        <% }) %>
+                    </li>
+                <% } %>
+                <!-- Add other relevant information as needed -->
+            </ul>
+            <% if (currentUser) { %>
+                <% if (course.students.includes(currentUser._id)) { %>
+                    <p>You are already enrolled in this course.</p>
+                <% } else { %>
+                    <!-- User is logged in and not already enrolled, show enrollment button -->
+                    <form action="/user/<%= currentUser._id %>/course/<%= course._id %>/enroll" method="POST">
+                        <button type="submit" class="btn btn-primary mt-3">Enroll in Course</button>
+                    </form>
+                <% } %>
+            <% } else { %>
+                <!-- User is not logged in, show login button -->
+                <a href="/user/login" class="btn btn-primary mt-3">Login to Enroll</a>
+            <% } %>
+        </div>
+        <aside class="col-md-4">
+            <% if (currentUser) { %>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Enrollment Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Welcome, <%= currentUser.username %>!</p>
+                        <p>Explore your options:</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">View Enrolled Courses</li>
+                            <li class="list-group-item">Browse Available Courses</li>
+                            <li class="list-group-item">Update Profile</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/user/enrolled-courses/<%= currentUser._id %>" class="btn btn-primary">View Enrolled Courses</a>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Welcome to our platform!</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Sign in or create an account to get started.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/user/login" class="btn btn-primary">Sign In</a>
+                        <a href="/user/register" class="btn btn-outline-primary">Register</a>
+                    </div>
+                </div>
+            <% } %>
+        </aside>
+        
+    </div>
 
-    <!-- Button to delete course -->
-    <form action="/admin/course/<%= course._id %>/delete" method="GET">
-        <button type="submit">Delete</button>
-    </form>
+    <% if (isAdmin) { %>
+        <div class="row mt-4">
+            <div class="col">
+                <!-- Buttons for admin -->
+                <a href="/admin/course/<%= course._id %>/edit" class="btn btn-primary mr-2">Edit</a>
+                <form action="/admin/course/<%= course._id %>/delete" method="GET">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+
+
+
+
+
+
 
 

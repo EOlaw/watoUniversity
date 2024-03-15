@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const Department = require('../models/departmentModel');
-const { Course } = require('../models/courseModel');
+const Course = require('../models/courseModel');
 const Announcement  = require('../models/announcementModel');
 const Resource = require('../models/resourceModel');
 const Document = require('../models/documentModel');
@@ -68,17 +68,31 @@ const adminControllers = {
   },
 
   // Delete a user by ID
-  deleteUser: async (req, res) => {
-      try {
-          const deletedUser = await User.findByIdAndDelete(req.params.id);
-          if (!deletedUser) {
-              res.status(404).json({ message: 'User not found' });
-          } else {
-              res.status(200).json(deletedUser);
-          }
-      } catch (error) {
-          res.status(400).json({ error: error.message });
+  deleteUser: async (req, res, next) => {
+    try {
+      const deletedUser = await User.findByIdAndDelete(req.params.id);
+      if (!deletedUser) {
+        return res.status(404).json({ error: 'User not found' });
       }
+      // Remove the deleted user from all courses
+      const courseIdArray = deletedUser.enrolledCourses;
+      await Course.updateMany(
+        { _id: { $in: courseIdArray } },
+        { $pull: { students: deletedUser._id } },
+        { multi: true }
+      );
+      // If the course has an enrollment limit, increment the enrollment limit for each affected course
+      const affectedCourses = await Course.find({ _id: { $in: courseIdArray } });
+      for (const course of affectedCourses) {
+        if (course.enrollmentLimit) {
+          course.enrollmentLimit += 1;
+          await course.save();
+        }
+      }
+      res.status(200).json(deletedUser);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
   },
   // Block a user
   blockUser: async (req, res, next) => {
@@ -189,29 +203,38 @@ const adminControllers = {
       res.status(500).json({ error: 'Error creating course' });
     }
   },
-  //Get Courses
+  // Get Courses
   getCourses: async (req, res, next) => {
     try {
-      const courses = await Course.find();
-      res.render('courses/viewCourses', { courses: courses })
-      //res.status(200).json({ courses: courses })
+        const courses = await Course.find();
+        const courseTags = await Course.distinct("tags"); // Get all unique tags
+        res.render('courses/viewCourses', { courses: courses, courseTags: courseTags });
+        //res.status(200).json({ courses: courses });
     } catch (err) {
-      res.status(400).json({ error: err.message })
+        res.status(400).json({ error: err.message });
     }
   },
-  //Get A Course
+
+  // Get a course
   getCourse: async (req, res, next) => {
     try {
+      // Fetch the course
       const course = await Course.findById(req.params.id);
       if (!course) {
-        return res.status(404).send({ error: 'Course not found' })
+        return res.status(404).send({ error: 'Course not found' });
       }
-      res.render('courses/viewCourse', { course: course })
-      //res.status(200).json({ course: course })
+
+      // Check if user is admin
+      const isAdmin = req.user && req.user.isAdmin;
+
+      // Render the viewCourse template with the course data
+      res.render('courses/viewCourse', { course: course, isAdmin: isAdmin });
     } catch (err) {
-      res.status(400).json({ error: err.message })
+      res.status(400).json({ error: err.message });
     }
   },
+
+
   editCourse: async (req, res, next) => {
     try {
       const course = await Course.findById(req.params.id);
@@ -253,6 +276,20 @@ const adminControllers = {
         res.status(500).json({ error: 'Error deleting course' });
       }
   },
+  // Get courses by tag
+  getCoursesByTag: async (req, res, next) => {
+    try {
+        const tag = req.params.tag; // Get the tag from the request parameters
+        const filteredCourses = await Course.find({ tags: tag }); // Query courses with the specified tag
+        const courseTags = await Course.distinct("tags"); // Get all unique tags
+        res.render('courses/coursesByTag', { courseTags: courseTags, filteredCourses: filteredCourses });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+  },
+
+
+  
   // Create Schedule for Course
   createSchedule: async (req, res, next) => {
       try {
@@ -338,6 +375,7 @@ const adminControllers = {
           res.status(500).json({ error: 'Error deleting course schedule.' });
       }
   },
+  
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// Events & Announcements //////////////////////////////////////////////////

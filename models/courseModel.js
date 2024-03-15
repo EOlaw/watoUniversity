@@ -9,7 +9,7 @@ const courseSchema = new Schema({
   duration: { type: String }, // Additional field: Duration of the course
   location: { type: String }, // Additional field: Location of the course
   tags: [{ type: String }], // Additional field: Tags or categories for the course
-  image: { type: String }, // Additional field: Image or thumbnail for the course
+  images: [{ public_id: String, url: String }], // Additional field: Image or thumbnail for the course
   enrollmentLimit: { type: Number }, // Additional field: Maximum number of students allowed to enroll
   status: { type: String, enum: ['active', 'inactive', 'upcoming'], default: 'active' }, // Additional field: Status of the course
   instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -62,9 +62,13 @@ const Material = mongoose.model('Material', materialSchema);
 const Syllabus = mongoose.model('Syllabus', syllabusSchema);
 const GradeCriteria = mongoose.model('GradeCriteria', gradeCriteriaSchema);
 
+module.exports = Course
+
+/*
 module.exports = {
   Course,
   Material,
   Syllabus,
   GradeCriteria,
 };
+*/

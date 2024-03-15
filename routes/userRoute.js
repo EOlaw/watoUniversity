@@ -12,7 +12,7 @@ router.route('/register')
 router.route('/login')
    .get(userControllers.renderLogin)
    .post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/user/login' }), userControllers.loginUser)
-   
+
 router.route('/logout')
     .get(userControllers.logout)
 
@@ -23,5 +23,15 @@ router.route('/:id')
     .get(isAuthenticated, isAdmin, userControllers.getUser)
     .put(isAuthenticated, isAdmin, userControllers.updateUser)
     .delete(isAuthenticated, userControllers.deleteUser)
-    
+
+router.route('/enrolled-courses/:userId')
+    .get(isAuthenticated, userControllers.viewEnrolledCourse)
+router.route('/:userId/course/:courseId/enroll')
+    .post(isAuthenticated, userControllers.enrolledUserInCourse)
+router.route('/:userId/course/:courseId/complete')
+    .post(isAuthenticated, userControllers.completeCourse)
+
+router.route('/students/:userId/course/:courseId/remove')
+    .post(isAuthenticated, userControllers.removeStudentFromCourse)
+
 module.exports = router;
