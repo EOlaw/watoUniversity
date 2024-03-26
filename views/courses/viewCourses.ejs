@@ -3,13 +3,95 @@
 <style>
     /* Remove underline from anchor tags */
     a {
+        color: black;
         text-decoration: none;
     }
+    .card {
+        border: 1px solid #e3e3e3;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+    
+    .course-image {
+        width: 100%;
+        max-height: 222px;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+   .card-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .card-title a {
+        text-decoration: none;
+        color: #333;
+    }
+
+    .card-text {
+        font-size: 20px;
+        margin-bottom: 5px;
+        overflow: hidden;
+    }
+
     /* Remove bullet points from list items */
     ul {
         list-style-type: none;
         padding: 0; /* Optionally, remove default padding */
         margin: 0; /* Optionally, remove default margin */
+    }
+    /* Media query for iPhone screen sizes */
+    @media only screen and (max-width: 576px) {
+        /* Adjust styles for iPhone screen sizes */
+        .card-title {
+            font-size: 16px;
+        }
+        .card-text {
+            font-size: 12px;
+        }
+    }
+
+    /* Media query for iPad screen sizes */
+    @media only screen and (min-width: 577px) and (max-width: 1024px) {
+        /* Adjust styles for iPad screen sizes */
+        .card-title {
+            font-size: 20px;
+        }
+        .card-text {
+            font-size: 14px;
+        }
+        
+        .course-card {
+            width: calc(33.333% - 20px); /* Adjust the width to fit three cards with margins */
+            margin-right: 20px; /* Add margin between cards */
+        }
+
+        .course-card:nth-child(3n) {
+            margin-right: 0; /* Remove margin for the last card in each row */
+        }
+    }
+
+    /* Media query for MacBook screen sizes */
+    @media only screen and (min-width: 1025px) {
+        /* Adjust styles for MacBook screen sizes */
+        .card-title {
+            font-size: 22px;
+        }
+        .card-text {
+            font-size: 16px;
+        }
     }
 </style>
 
@@ -43,7 +125,7 @@
                                     <% if (course.images.length > 0) { %> 
                                         <img src="<%= course.images[0].url %>" alt="<%= course.courseName %> Image" class="card-img-top course-image">
                                     <% } else { %>
-                                        <img src="https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg" class="card-img-top product-image" alt="Product Image">
+                                        <img src="https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg" class="card-img-top course-image" alt="Course Image">
                                     <% } %>
                                     <div class="card-body">
                                         <a href="/admin/course/<%= course._id %>"><h5 class="card-title"><%= course.courseName %></h5></a>

@@ -196,8 +196,8 @@ const adminControllers = {
     try {
       const course = new Course(req.body)
       const savedCourse = await course.save();
-      res.render('courses/createCourse', { course: savedCourse })
-      //res.status(201).json(savedCourse);
+      //res.render('courses/createCourse', { course: savedCourse })
+      res.status(201).json(savedCourse);
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: 'Error creating course' });
