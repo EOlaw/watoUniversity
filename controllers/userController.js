@@ -32,10 +32,38 @@ const userControllers = {
     },
     // Login
     loginUser: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+            const user = await User.findOne( { username });
+            if (!user || !(await user.isPasswordSame(password))) {
+                req.flash('error', 'Invalid username or password');
+                return res.redirect('/user/login')
+            }
+            req.login(user, (err) => {
+                if (err) {
+                    console.log(err);
+                    return next(err);
+                }
+                // Redirect based on user's role
+                if (user.role === 'student' || user.role === 'parent') {
+                    return res.redirect('/student/portal');
+                } else if (user.role == 'instructor' || user.role === 'center') {
+                    return res.redirect('/teacher/portal')
+                } else {
+                    return res.redirect('/');
+                }
+            })
+        } catch (err) {
+            console.log(err);
+            req.flash('error', 'An error occurred. Please try again later.');
+            res.redirect('/user/login');
+        }
+        /*
         req.flash('success', 'Welcome back!');
         const redirectUrl = req.session.returnTo || '/';
         delete req.session.returnTo; // Delete after redirection
         res.redirect(redirectUrl);
+        */
     },
     // Logout
     logout: (req, res) => {

@@ -11,7 +11,7 @@ const courseSchema = new Schema({
   tags: [{ type: String }], // Additional field: Tags or categories for the course
   images: [{ public_id: String, url: String }], // Additional field: Image or thumbnail for the course
   enrollmentLimit: { type: Number }, // Additional field: Maximum number of students allowed to enroll
-  status: { type: String, enum: ['active', 'inactive', 'upcoming'], default: 'active' }, // Additional field: Status of the course
+  availability: { type: String, enum: ['active', 'inactive', 'upcoming'], default: 'active' }, // Additional field: Status of the course
   instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   schedules: [{
@@ -20,15 +20,53 @@ const courseSchema = new Schema({
     endDate: Date,
     sessions: [{ day: String, time: String }],
   }],
-  reviews: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Review' 
-  }], // Additional field: Reviews for the course
+  discounts: [{ 
+    code: String, 
+    percentage: Number, 
+    expirationDate: Date 
+  }], // Array of discount objects
+  paymentPlans: [{
+    installmentAmount: Number,
+    frequency: String, // Weekly, Monthly, etc.
+  }],
+  materials: [{ 
+    title: String, 
+    url: String 
+  }], // Array of course materials
+  certification: { 
+    type: String, 
+    required: true 
+  }, // Certification type
+  level: { 
+    type: String 
+  }, // Level or track of the course
+  progress: [{
+    student: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    completedModules: [{ type: String }],
+    grade: Number,
+  }], // Array of student progress objects
+  ratings: [{ 
+    student: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    rating: Number,
+    feedback: String
+  }],
   resources: [{ 
     title: String, 
     url: String 
-  }] // Additional field: Additional resources related to the course
+  }] ,
+  // Additional field: Additional resources related to the course
+  price: { type: Number, required: true }, // New field: Price of the course
+  refundPolicy: { type: String, required: true } // New field: Refund policy for the course
 });
+
+
+
+
+
+
+
+
+
 
 // Course Materials
 const materialSchema = new mongoose.Schema({
