@@ -11,7 +11,7 @@ const courseSchema = new Schema({
   tags: [{ type: String }], // Additional field: Tags or categories for the course
   images: [{ public_id: String, url: String }], // Additional field: Image or thumbnail for the course
   enrollmentLimit: { type: Number }, // Additional field: Maximum number of students allowed to enroll
-  availability: { type: String, enum: ['active', 'inactive', 'upcoming'], default: 'active' }, // Additional field: Status of the course
+  availability: { type: String, enum: ['Active', 'Inactive', 'Upcoming'], default: 'Active' }, // Additional field: Status of the course
   instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   schedules: [{

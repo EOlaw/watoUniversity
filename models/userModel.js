@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     lastname: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     mobile: { type: String, required: true, unique: true },
+    role: { type: String, enum: ['student', 'parent', 'instructor'], required: true },
     isAdmin: { type: Boolean, default: false },
     enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
 }, { timestamps: true})

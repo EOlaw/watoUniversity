@@ -1,0 +1,33 @@
+<% layout('layouts/boilerplate') %>
+<div class="container mt-5">
+    <h1>Welcome <%= user.firstname %> <%= user.lastname %>!</h1>
+    <h2>Your Courses</h2>
+    <% if (courses.length > 0) { %>
+        <% courses.forEach(course => { %>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <%= course.title %>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Enrolled Students</h5>
+                    <% if (course.students && course.students.length > 0) { %>
+                        <p>Course: <%= course.courseName %></p>
+                        <ul class="list-group">
+                            <% course.students.forEach(student => { %>
+                                <li class="list-group-item"><%= student.firstname %> <%= student.lastname %> (<%= student.email %>)</li>
+                            <% }); %>
+                        </ul>
+                    <% } else { %>
+                        <p>No students enrolled in this course yet.</p>
+                    <% } %>
+                </div>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p>You are not currently teaching any courses.</p>
+    <% } %>
+</div>
+
+
+
+

@@ -89,7 +89,7 @@ app.use('/', homeRoutes)
 app.use('/user', userRoutes)
 app.use('/admin', adminRoutes)
 
-/
+/*
 app.all('*', (req, res, next) => {
     next(new ExpressError("Page Not Found", 404 ))
 })
@@ -99,6 +99,7 @@ app.use((err, req, res, next) => {
     if (!err.message) err.message = 'Oh No, Something Went Wrong!'
     res.status(statusCode).render('error', { err })
 })
+*/
 
 // Server
 const port = process.env.PORT || 4500;

@@ -219,7 +219,7 @@ const adminControllers = {
   getCourse: async (req, res, next) => {
     try {
       // Fetch the course
-      const course = await Course.findById(req.params.id);
+      const course = await Course.findById(req.params.id).populate('instructors', 'firstname lastname');
       if (!course) {
         return res.status(404).send({ error: 'Course not found' });
       }

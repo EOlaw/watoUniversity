@@ -30,41 +30,60 @@ const userControllers = {
         //res.json('Login Page')
         res.render('users/login')
     },
+    
     // Login
-    loginUser: async (req, res) => {
+    loginUser: async (req, res, next) => {
         try {
-            const { username, password } = req.body;
-            const user = await User.findOne( { username });
+            const { username, password, role } = req.body;
+            const user = await User.findOne({ username });
+
+            // Check if user exists and password is correct
             if (!user || !(await user.isPasswordSame(password))) {
                 req.flash('error', 'Invalid username or password');
-                return res.redirect('/user/login')
+                return res.redirect('/user/login');
             }
+
+            // If user is admin, log them in directly
+            if (user.isAdmin) {
+                req.login(user, (err) => {
+                    if (err) {
+                        console.log(err);
+                        return next(err);
+                    }
+                    return res.redirect('/');
+                });
+                return;
+            }
+
+            // If role is not selected or mismatched, render login page with message
+            if (!user.role || role !== user.role) {
+                req.flash('error', 'You are not authorized to log in as ' + role);
+                return res.redirect('/user/login');
+            }
+
+            // Log in the user
             req.login(user, (err) => {
                 if (err) {
                     console.log(err);
                     return next(err);
                 }
                 // Redirect based on user's role
-                if (user.role === 'student' || user.role === 'parent') {
-                    return res.redirect('/student/portal');
-                } else if (user.role == 'instructor' || user.role === 'center') {
-                    return res.redirect('/teacher/portal')
+                if (role === 'student' || role === 'parent') {
+                    return res.redirect('/admin/courses');
+                } else if (role === 'instructor' || role === 'center') {
+                    return res.redirect(`/user/${user._id}/instructor-dashboard`); // Use user._id instead of userId
                 } else {
                     return res.redirect('/');
                 }
-            })
+            });
         } catch (err) {
             console.log(err);
             req.flash('error', 'An error occurred. Please try again later.');
             res.redirect('/user/login');
         }
-        /*
-        req.flash('success', 'Welcome back!');
-        const redirectUrl = req.session.returnTo || '/';
-        delete req.session.returnTo; // Delete after redirection
-        res.redirect(redirectUrl);
-        */
     },
+
+
     // Logout
     logout: (req, res) => {
         // Check if the user is authenticated
@@ -144,6 +163,11 @@ const userControllers = {
             // Check if user and course exist
             if (!user || !course) {
             return res.status(404).json({ error: 'User or course not found' });
+            }
+
+            // Check if the user is an instructor
+            if (user.role === 'instructor' || user.role === 'center') {
+                return res.status(403).json({ error: 'Instructors are not allowed to enroll in courses' });
             }
 
             // Check if the course is active and has available slots
@@ -237,7 +261,34 @@ const userControllers = {
         } catch (err) {
         res.status(400).json({ error: err.message });
         }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////// INSTRUCTORS     ////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    renderInstructorDashboard: async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            // Fetch user information for the logged-in instructor
+            const user = await User.findById(userId); // Assuming the instructorId is the user's _id
+            // Fetch courses associated with the instructor
+            const courses = await Course.find({ instructors: userId }).populate('instructors').populate('students');
+    
+            // Log the courses fetched
+            console.log('Courses for instructor:', courses);
+    
+            if (courses.length === 0) {
+                // If the instructor is not associated with any courses, render the dashboard with an empty courses array
+                return res.render('instructors/dashboard', { user: req.user, courses: [] });
+            }
+            // Render the instructor dashboard template with course data
+            res.render('instructors/dashboard', { user: req.user, courses });
+        } catch (err) {
+            console.error('Error rendering instructor dashboard:', err);
+            res.status(500).send('Internal Server Error');
+        }
     }
-  
+    
+    
 }
 module.exports = userControllers

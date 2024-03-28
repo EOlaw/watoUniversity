@@ -1,11 +1,22 @@
 <% layout('layouts/boilerplate') %>
 
+<% function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+} %> 
+
 <div class="container">
     <div class="row">
         <div class="col-md-8">
             <h1><%= course.courseName %></h1>
             <p><%= course.description %></p>
             <ul class="list-group">
+                <% if (course.instructors.length > 0) { %>
+                    <li class="list-group-item">Instructor: 
+                        <% course.instructors.forEach(function(instructor) { %>
+                            <%= capitalizeFirstLetter(instructor.firstname) %> <%= capitalizeFirstLetter(instructor.lastname) %> <% /* Capitalize first letter of firstname and lastname */ %>
+                        <% }) %>
+                    </li>
+                <% } %>  
                 <% if (course.duration) { %>
                     <li class="list-group-item">Duration: <%= course.duration %></li>
                 <% } %>
@@ -18,14 +29,9 @@
                 <% if (course.enrollmentLimit) { %>
                     <li class="list-group-item">Enrollment Limit: <%= course.enrollmentLimit %></li>
                 <% } %>
-                <li class="list-group-item">Status: <%= course.status %></li>
-                <% if (course.instructors.length > 0) { %>
-                    <li class="list-group-item">Instructors: 
-                        <% course.instructors.forEach(function(instructor) { %>
-                            <%= instructor.name %> <% /* Assuming there's a 'name' field for instructors */ %>
-                        <% }) %>
-                    </li>
-                <% } %>
+                <li class="list-group-item">Availability: <%= course.availability %></li>               
+                <li class="list-group-item">Refund: <%= course.refundPolicy %></li>               
+                                              
                 <% if (course.schedules.length > 0) { %>
                     <li class="list-group-item">Schedules: 
                         <% course.schedules.forEach(function(schedule) { %>

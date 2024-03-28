@@ -8,6 +8,15 @@
                     <div class="card-body">
                         <h5 class="card-title">Register</h5>
                         <form action="/user/register" method="POST" class="validated-form" novalidate>
+                            <!-- Role Selection Buttons -->
+                            <div class="text-center mb-3">
+                                <h5>Are you a:</h5>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary student-btn">Student/Parent</button>
+                                    <button type="button" class="btn btn-outline-primary instructor-btn">Instructor/Center</button>
+                                </div>
+                                <input type="hidden" id="role" name="role"> <!-- Hidden field to store selected role -->
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label" for="firstname">First Name</label>
                                 <input class="form-control" type="text" id="firstname" name="firstname" placeholder="First Name" required autofocus>
@@ -70,3 +79,34 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentBtn = document.querySelector('.student-btn');
+            const instructorBtn = document.querySelector('.instructor-btn');
+            const roleInput = document.getElementById('role');
+    
+            // Add event listener to student button
+            studentBtn.addEventListener('click', function() {
+                // Set role value
+                roleInput.value = 'student';
+    
+                // Highlight student button and remove highlight from instructor button
+                studentBtn.classList.add('btn-primary');
+                studentBtn.classList.remove('btn-outline-primary');
+                instructorBtn.classList.remove('btn-primary');
+                instructorBtn.classList.add('btn-outline-primary');
+            });
+    
+            // Add event listener to instructor button
+            instructorBtn.addEventListener('click', function() {
+                // Set role value
+                roleInput.value = 'instructor';
+    
+                // Highlight instructor button and remove highlight from student button
+                instructorBtn.classList.add('btn-primary');
+                instructorBtn.classList.remove('btn-outline-primary');
+                studentBtn.classList.remove('btn-primary');
+                studentBtn.classList.add('btn-outline-primary');
+            });
+        });
+    </script>
