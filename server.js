@@ -42,12 +42,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
 // Set up middleware for parsing JSON and handling URL-encoded data
-app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // This is for JSON data
+app.use(methodOverride('_method'));
 app.use(session({ secret: 'notagoodsecret' }));
 app.use(morgan('dev'));
 app.use(cors());
-app.use(express.json()); // This is for JSON data
 app.use(express.static(path.join(__dirname, 'public')))
 
 // Initialize Passport

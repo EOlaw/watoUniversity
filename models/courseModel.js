@@ -26,8 +26,8 @@ const courseSchema = new Schema({
     expirationDate: Date 
   }], // Array of discount objects
   paymentPlans: [{
-    installmentAmount: Number,
-    frequency: String, // Weekly, Monthly, etc.
+    installmentAmount: { type: Number, required: true }, // Example of a required field
+    frequency: { type: String, required: true }, // Example of a required field
   }],
   materials: [{ 
     title: String, 
@@ -48,22 +48,16 @@ const courseSchema = new Schema({
   ratings: [{ 
     student: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     rating: Number,
-    feedback: String
+    comment: String
   }],
   resources: [{ 
     title: String, 
     url: String 
-  }] ,
+  }],
   // Additional field: Additional resources related to the course
   price: { type: Number, required: true }, // New field: Price of the course
   refundPolicy: { type: String, required: true } // New field: Refund policy for the course
 });
-
-
-
-
-
-
 
 
 

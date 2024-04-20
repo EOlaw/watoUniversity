@@ -1,8 +1,35 @@
 <% layout('layouts/boilerplate') %>
 
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+/* Star Rating Styles */
+.star-rating {
+    display: inline-block;
+    font-size: 0; /* Hide the text content of the stars */
+}
+.star-rating input[type="radio"] {
+    display: none; /* Hide the radio buttons */
+}
+.star-rating label.star {
+    font-size: 1.5rem; /* Set the size of the star icons */
+    color: #ccc; /* Set the default color of the stars */
+    cursor: pointer;
+    order: 1; /* Start from the leftmost star */
+}
+.star-rating label.star:hover,
+.star-rating label.star:hover ~ label.star,
+.star-rating input[type="radio"]:checked ~ label.star {
+    color: #ff0; /* Change color to yellow on hover and when selected */
+}
+
+</style>
+
+
 <% function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 } %> 
+
 
 <div class="container">
     <div class="row">
@@ -54,7 +81,72 @@
                 <!-- User is not logged in, show login button -->
                 <a href="/user/login" class="btn btn-primary mt-3">Login to Enroll</a>
             <% } %>
+
+            <!-- Review Section -->
+        <h2>Reviews</h2>
+        <div id="reviews">
+            <% if (course.ratings.length > 0) { %>
+                <% course.ratings.forEach(function(review) { %>
+                    <div class="review">
+                        <p><strong><%= review.student.firstname %> <%= review.student.lastname %>:</strong> <%= review.rating %> stars</p>
+                        <p><%= review.comment %></p>
+                        <!-- Allow update and delete only if the current user is the author of the review -->
+                        <% if (currentUser && currentUser._id.toString() === review.student._id.toString()) { %>
+                            <form action="/admin/course/<%= course._id %>/reviews/<%= review._id %>/delete" method="GET">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                            <!-- Update form -->
+                            <form action="/admin/course/<%= course._id %>/reviews/<%= review._id %>/update?_method=PUT" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                <div class="form-group">
+                                    <label for="rating">Rating:</label>
+                                    <!-- Display custom star icons based on the rating -->
+                                    <div class="star-rating" data-rating="<%= review.rating %>">
+                                        <% for (let i = 1; i <= 5; i++) { %>
+                                            <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" style="display: none;">
+                                            <label for="star<%= i %>" title="<%= i %> star" class="star">&#9734;</label>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="comment">Comment:</label>
+                                    <textarea class="form-control" id="comment<%= review._id %>" name="comment" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            </form>                                
+                        <% } %>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <!-- Form for submitting a review -->
+                <% if (currentUser && !course.ratings.some(review => review.student._id.toString() === currentUser._id.toString())) { %>
+                    <h3>Add a Review</h3>
+                    <form action="/admin/course/<%= course._id %>/reviews" method="POST">
+                        <div class="form-group">
+                            <label for="rating">Rating:</label>
+                            <!-- Display custom star icons for selecting the rating -->
+                            <div class="star-rating" data-rating="0">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                    <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" style="display: none;">
+                                    <label for="star<%= i %>" title="<%= i %> star" class="star">&#9733;</label>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Comment:</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                <% } else { %>
+                    <p>Login to add a review.</p>
+                <% } %>
+            <% } %>
         </div>
+        
+    </div>
+        
         <aside class="col-md-4">
             <% if (currentUser) { %>
                 <div class="card">
@@ -105,7 +197,22 @@
     <% } %>
 </div>
 
+<script>
+    // Star rating functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const starRatingContainers = document.querySelectorAll('.star-rating');
+        starRatingContainers.forEach(container => {
+            const stars = container.querySelectorAll('input[type="radio"]');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.value;
+                    container.setAttribute('data-rating', rating);
+                });
+            });
+        });
+    });
 
+</script>
 
 
 

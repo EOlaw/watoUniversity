@@ -219,7 +219,15 @@ const adminControllers = {
   getCourse: async (req, res, next) => {
     try {
       // Fetch the course
-      const course = await Course.findById(req.params.id).populate('instructors', 'firstname lastname');
+      const course = await Course.findById(req.params.id)
+        .populate('instructors', 'firstname lastname')
+        .populate({
+            path: 'ratings',
+            populate: {
+                path: 'student',
+                select: 'firstname lastname' // Select only the fields you need
+            }
+        });
       if (!course) {
         return res.status(404).send({ error: 'Course not found' });
       }
@@ -251,11 +259,32 @@ const adminControllers = {
   updateCourse: async (req, res, next) => {
       // Implement course update logic
       try {
-        const updatedCourse = await Course.findByIdAndUpdate( req.params.id , req.body, { new: true });
-        if (!updatedCourse) {
-          return res.status(404).json({ error: 'Course not found.' })
+        const courseId = req.params.id;
+        const course = await Course.findById(courseId);
+        if (!course) {
+          return res.status(404).json({ error: 'Course not found.' });
         }
-        res.redirect(`/admin/course/${req.params.id}`)
+        // Parse paymentPlans string into an array of objects
+        if (req.body.paymentPlans) {
+          req.body.paymentPlans = req.body.paymentPlans.split(',').map(plan => {
+              const [installmentAmount, frequency] = plan.trim().split(' ');
+              return { installmentAmount: parseInt(installmentAmount), frequency };
+          });
+        }
+        // Check if the instructor being assigned is indeed instructor
+        if (req.body.instructors) {
+          const { instructors } = req.body;
+          const instructorUser = await User.findById(instructors);
+          if (!instructorUser || instructorUser.role !== 'instructor') {
+
+            return res.status(400).json({ error: 'Invalid instructor.' });
+          }
+        }
+
+        // Update the course with the new data
+        const updatedCourse = await Course.findByIdAndUpdate(courseId, req.body, { new: true });
+        
+        res.redirect(`/admin/course/${courseId}`)
         //res.status(200).json(updatedCourse)
       } catch (err) {
         console.log(err);
@@ -375,6 +404,91 @@ const adminControllers = {
           res.status(500).json({ error: 'Error deleting course schedule.' });
       }
   },
+
+  // Create Review
+  createReview: async (req, res) => {
+    try {
+      const courseId = req.params.id;
+      const { rating, comment } = req.body;
+
+      // Find the course
+      let course = await Course.findById(courseId).populate('ratings.student', 'firstname')
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found.' });
+      }
+
+      // Add the review
+      course.ratings.push({
+        student: req.user._id, // Assuming the user is authenticated
+        rating,
+        comment
+      });
+      await course.save();
+
+      res.redirect(`/admin/course/${courseId}?reviewAdded=true&rating=${rating}&feedback=${comment}`);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error.' });
+    }
+  },
+
+  // Update Review
+  updateReview: async (req, res) => {
+    try {
+      const { courseId, reviewId } = req.params;
+      const { rating, comment } = req.body;
+      const user = req.user.id; // Get the logged-in user id
+
+      // Find the course
+      let course = await Course.findById(courseId).populate('ratings.student', 'firstname')
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found.' });
+      }
+
+      // Find the review by reviewId
+      const review = course.ratings.id(reviewId);
+      if (!review) {
+        return res.status(404).json({ error: 'Review not found.' });
+      }
+
+      // Check if the user is the author of the review
+      if (!review.student.equals(user)) {
+        return res.status(403).json({ error: 'Unauthorized access.' });
+      }
+
+      // Update the review
+      review.rating = rating;
+      review.comment = comment;
+
+      // Save the updated course
+      await course.save();
+
+      res.redirect(`/admin/course/${courseId}`);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error.' });
+    }
+  },
+
+  deleteReview: async (req, res) => {
+    try {
+      const { courseId, reviewId } = req.params;
+      //Find the course
+      const course = await Course.findById(courseId);
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found.' })
+      }
+      //Find and remove the review
+      course.ratings.pull(reviewId);
+      await course.save();
+      //res.status(200).json({ message: 'Review deleted successfully.' })
+      res.redirect(`/admin/course/${courseId}`)
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error.' })
+    }
+  },
+
   
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

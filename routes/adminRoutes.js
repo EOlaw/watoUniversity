@@ -48,6 +48,13 @@ router.route('/courses/:id/schedule/:scheduleId')
     .put(isAuthenticated, isAdmin, adminControllers.updateSchedule)
     .delete(isAuthenticated, isAdmin, adminControllers.deleteSchedule)
 
+router.route('/course/:id/reviews')
+    .post(isAuthenticated, adminControllers.createReview)
+router.route('/course/:courseId/reviews/:reviewId/update')
+    .put(isAuthenticated, adminControllers.updateReview)
+router.route('/course/:courseId/reviews/:reviewId/delete')
+    .get(isAuthenticated, adminControllers.deleteReview)
+
 // Events & Announcements Routes
 router.route('/announcements/create')
     .post(isAuthenticated, isAdmin, adminControllers.createAnnouncement)
