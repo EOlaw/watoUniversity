@@ -1,5 +1,8 @@
 <% layout('layouts/boilerplate') %>
 
+<% function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+} %>
 
 <!--
     <!DOCTYPE html>
@@ -80,9 +83,9 @@
                             <div class="col-sm-10 col-lg-8">
                                 <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Best Online Courses</h5>
                                 <h1 class="display-3 text-white animated slideInDown">The Best Online Learning Platform</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea sanctus eirmod elitr.</p>
-                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
+                                <p class="fs-5 text-white mb-4 pb-2">Discover the best online courses tailored to your learning needs. Whether you're a beginner or an expert, our platform offers a wide range of courses to help you enhance your skills and achieve your goals.</p>
+                                <a href="#" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
+                                <a href="#" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
                             </div>
                         </div>
                     </div>
@@ -96,9 +99,9 @@
                             <div class="col-sm-10 col-lg-8">
                                 <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Best Online Courses</h5>
                                 <h1 class="display-3 text-white animated slideInDown">Get Educated Online From Your Home</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea sanctus eirmod elitr.</p>
-                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
+                                <p class="fs-5 text-white mb-4 pb-2">Embark on your online learning journey from the comfort of your home. With our platform, you have access to top-quality courses designed to expand your knowledge and skills. Join us today and take the first step towards your educational goals.</p>
+                                <a href="#" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
+                                <a href="#" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
                             </div>
                         </div>
                     </div>
@@ -107,6 +110,7 @@
         </div>
     </div>
     <!-- Carousel End -->
+
 
     <!-- Service Start -->
     <div class="container-xxl py-5">
@@ -117,7 +121,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
                             <h5 class="mb-3">Skilled Instructors</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Our skilled instructors are experts in their fields, dedicated to providing high-quality education and guidance to our students.</p>
                         </div>
                     </div>
                 </div>
@@ -126,7 +130,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-globe text-primary mb-4"></i>
                             <h5 class="mb-3">Online Classes</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Experience our online classes designed to offer flexibility and convenience without compromising on educational quality.</p>
                         </div>
                     </div>
                 </div>
@@ -135,7 +139,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-home text-primary mb-4"></i>
                             <h5 class="mb-3">Home Projects</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Engage in hands-on learning with our home projects, where you can apply your knowledge to real-world scenarios and enhance your skills.</p>
                         </div>
                     </div>
                 </div>
@@ -144,7 +148,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-book-open text-primary mb-4"></i>
                             <h5 class="mb-3">Book Library</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Explore our extensive book library featuring a wide range of resources to support your learning journey and expand your knowledge.</p>
                         </div>
                     </div>
                 </div>
@@ -152,6 +156,7 @@
         </div>
     </div>
     <!-- Service End -->
+
     
     <!-- About Start -->
     <div class="container-xxl py-5">
@@ -197,40 +202,6 @@
     </div>
     <!-- About End -->
 
-   <!-- Categories Start -->
-    <div class="container-xxl py-5 category">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Categories</h6>
-                <h1 class="mb-5">Courses Categories</h1>
-            </div>
-            <div class="row g-3">
-                <div class="col-lg-7 col-md-6">
-                    <div class="row g-3">
-                        <% courses.slice(0, 3).forEach((course, index) => { %>
-                            <% if (index === 0) { %>
-                                <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
-                            <% } else { %>
-                                <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="<%= index * 0.2 %>s">
-                            <% } %>
-                                <a class="position-relative d-block overflow-hidden" href="">
-                                    <img class="img-fluid" src="<%= course.images.length > 0 ? course.images[0].url : 'img/default-course-image.jpg' %>" alt="<%= course.courseName %>">
-                                    <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                        <h5 class="m-0"><%= course.courseName %></h5>
-                                        <small class="text-primary"><%= course.tags.length %> Courses</small>
-                                    </div>
-                                </a>
-                            </div>
-                        <% }) %>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Categories End -->
-
-    
-    
     <!-- Categories Start -->
     <div class="container-xxl py-5 category">
         <div class="container">
@@ -239,46 +210,21 @@
                 <h1 class="mb-5">Courses Categories</h1>
             </div>
             <div class="row g-3">
-                <div class="col-lg-7 col-md-6">
-                    <div class="row g-3">
-                        <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/cat-1.jpg" alt="">
-                                <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                    <h5 class="m-0">Web Design</h5>
-                                    <small class="text-primary">49 Courses</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.3s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/cat-2.jpg" alt="">
-                                <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                    <h5 class="m-0">Graphic Design</h5>
-                                    <small class="text-primary">49 Courses</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.5s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/cat-3.jpg" alt="">
-                                <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                    <h5 class="m-0">Video Editing</h5>
-                                    <small class="text-primary">49 Courses</small>
-                                </div>
-                            </a>
-                        </div>
+                <% const courseTags = courses.reduce((tags, course) => tags.concat(course.tags), []); %>
+                <% const uniqueTags = Array.from(new Set(courseTags)); %>
+                <% uniqueTags.slice(0, 4).forEach((tag, index) => { %>
+                    <% const tagCourses = courses.filter(course => course.tags.includes(tag)); %>
+                    <% const tagCourseImages = tagCourses.map(course => course.images.length > 0 ? course.images[0].url : 'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg'); %>
+                    <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="<%= index * 0.2 %>s">
+                        <a class="position-relative d-block overflow-hidden" href="#">
+                            <img class="img-fluid" src="<%= tagCourseImages[0] %>" alt="Category Image">
+                            <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
+                                <h5 class="m-0"><%= tag %></h5>
+                                <small class="text-primary"><%= tagCourses.length %> Courses</small>
+                            </div>
+                        </a>
                     </div>
-                </div>
-                <div class="col-lg-5 col-md-6 wow zoomIn" data-wow-delay="0.7s" style="min-height: 350px;">
-                    <a class="position-relative d-block h-100 overflow-hidden" href="">
-                        <img class="img-fluid position-absolute w-100 h-100" src="img/cat-4.jpg" alt="" style="object-fit: cover;">
-                        <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin:  1px;">
-                            <h5 class="m-0">Online Marketing</h5>
-                            <small class="text-primary">49 Courses</small>
-                        </div>
-                    </a>
-                </div>
+                <% }) %>
             </div>
         </div>
     </div>
@@ -292,95 +238,74 @@
                 <h1 class="mb-5">Popular Courses</h1>
             </div>
             <div class="row g-4 justify-content-center">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/course-1.jpg" alt="">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
+                <!-- Display the first three courses -->
+                <% let counter = 0; %>
+                <% courses.forEach((course, i) => { %>
+                    <% if (counter < 3) { %>
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="<%= i * 0.2 + 0.1 %>s">
+                            <div class="course-item bg-light">
+                                <div class="position-relative overflow-hidden">
+                                    <!-- Check if the 'image' property exists before accessing 'url' -->
+                                    <% if (course.image && course.image.url) { %>
+                                        <img class="img-fluid" src="<%= course.image.url %>" alt="<%= course.courseName %>">
+                                    <% } else { %>
+                                        <!-- Provide a placeholder image if 'image' or 'url' is missing -->
+                                        <a href="/admin/course/<%= course._id %>"><img class="img-fluid" src="https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg" alt="Course Image"></a>
+                                    <% } %>
+                                    <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
+                                        <a href="/admin/course/<%= course._id %>" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
+                                        <a href="/user/register" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
+                                    </div>
+                                </div>
+                                <div class="text-center p-4 pb-0">
+                                    <h3 class="mb-0">$<%= course.price %></h3>
+                                    <div class="mb-3">
+                                        <!-- Display custom star icons based on the rating -->
+                                        <div class="star-rating" data-rating="<%= course.rating %>">
+                                            <% for (let j = 1; j <= 5; j++) { %>
+                                                <% if (j <= course.rating) { %>
+                                                    <input type="radio" id="star<%= j %>-<%= i %>" name="rating" value="<%= j %>" style="display: none;"> 
+                                                    <label for="star<%= j %>-<%= i %>" title="<%= j %> star" class="star">&#9734;</label> 
+                                                <% } else { %>
+                                                    <input type="radio" id="star<%= j %>-<%= i %>" name="rating" value="<%= j %>" style="display: none;" checked> 
+                                                    <label for="star<%= j %>-<%= i %>" title="<%= j %> star" class="star">&#9733;</label>
+                                                <% } %>
+                                            <% } %> 
+                                            <small>(<%= course.ratings.length %>)</small>
+                                        </div>
+                                    </div>
+                                    <a href="/admin/course/<%= course._id %>"><h5 class="mb-4"><%= course.courseName %></h5></a>
+                                </div>
+                                <div class="d-flex border-top">
+                                    <% if (course.instructors && course.instructors.length > 0) { %>
+                                        <small class="flex-fill text-center border-end py-2">
+                                            <i class="fa fa-user-tie text-primary me-2"></i>
+                                            <%= capitalizeFirstLetter(course.instructors[0].firstname) %> <%= capitalizeFirstLetter(course.instructors[0].lastname) %>
+                                        </small>
+                                    <% } else { %>
+                                        <small class="flex-fill text-center border-end py-2">
+                                            <i class="fa fa-user-tie text-primary me-2"></i>
+                                        </small>
+                                    <% } %>
+                                    <small class="flex-fill text-center border-end py-2">
+                                        <i class="fa fa-clock text-primary me-2"></i>
+                                        <%= course.duration %>
+                                    </small>
+                                    <small class="flex-fill text-center py-2">
+                                        <i class="fa fa-user text-primary me-2"></i>
+                                        <%= course.students %>
+                                    </small>
+                                </div>
                             </div>
                         </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">$149.00</h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
-                            </div>
-                            <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>John Doe</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/course-2.jpg" alt="">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">$149.00</h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
-                            </div>
-                            <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>John Doe</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/course-3.jpg" alt="">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">$149.00</h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
-                            </div>
-                            <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>John Doe</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                </div>
+                        <% counter++; %>
+                    <% } %>
+                <% }); %>
             </div>
         </div>
     </div>
     <!-- Courses End -->
-    
+
     <!-- Team Start -->
     <div class="container-xxl py-5">
         <div class="container">

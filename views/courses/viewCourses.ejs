@@ -15,6 +15,10 @@
     }
 </style>
 
+<% function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+} %>
+
 <section class="container-fluid">
     <div class="container">
         <div class="row">
@@ -43,7 +47,7 @@
                             <!-- Display courses -->
                             <% if (courses.length > 0) { %> 
                                 <% courses.forEach((course, index) => { %>
-                                    <div class="col-lg-4 col-md-6">
+                                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="<%= index * 0.005 %>s">
                                         <div class="course-item bg-light" data-tags="<%= course.tags.join(',') %>">
                                             <div class="position-relative overflow-hidden">
                                                 <% if (course.images.length > 0) { %>
@@ -53,7 +57,7 @@
                                                 <% } %>
                                             </div>
                                             <div class="text-center p-4 pb-0">
-                                                <h3 class="mb-0"><%= course.price %></h3>
+                                                <h3 class="mb-0">$<%= course.price %></h3>
                                                 <div class="mb-3">
                                                     <!-- Display custom star icons based on the rating -->
                                                     <div class="star-rating" data-rating="<%= course.rating %>">
@@ -72,10 +76,26 @@
                                                 <a href="/admin/course/<%= course._id %>"><h5 class="mb-4"><%= course.courseName %></h5></a>
                                             </div>
                                             <div class="d-flex border-top">
-                                                <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i><%= course.instructor %></small>
-                                                <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i><%= course.duration %></small>
-                                                <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i><%= course.students %></small>
+                                                <% if (course.instructors && course.instructors.length > 0) { %>
+                                                    <small class="flex-fill text-center border-end py-2">
+                                                        <i class="fa fa-user-tie text-primary me-2"></i>
+                                                        <%= capitalizeFirstLetter(course.instructors[0].firstname) %> <%= capitalizeFirstLetter(course.instructors[0].lastname) %>
+                                                    </small>
+                                                <% } else { %>
+                                                    <small class="flex-fill text-center border-end py-2">
+                                                        <i class="fa fa-user-tie text-primary me-2"></i>
+                                                    </small>
+                                                <% } %>
+                                                <small class="flex-fill text-center border-end py-2">
+                                                    <i class="fa fa-clock text-primary me-2"></i>
+                                                    <%= course.duration %>
+                                                </small>
+                                                <small class="flex-fill text-center py-2">
+                                                    <i class="fa fa-user text-primary me-2"></i>
+                                                    <%= course.students %>
+                                                </small>
                                             </div>
+                                                                                        
                                         </div>
                                     </div>
                                 <% }) %>
@@ -85,12 +105,9 @@
                                 </div>
                             <% } %>
                         </div>
-                        
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 </section>

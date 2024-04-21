@@ -11,6 +11,8 @@ const cors = require('cors')
 const morgan = require('morgan')
 const session = require('express-session')
 const flash = require('connect-flash')
+const ExpressError = require('./utils/ExpressError');
+const nodemailer = require('nodemailer');
 const methodOverride = require('method-override')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
@@ -89,7 +91,41 @@ app.use('/', homeRoutes)
 app.use('/user', userRoutes)
 app.use('/admin', adminRoutes)
 
-/*
+// Route to handle form submission
+app.post('/contact', (req, res) => {
+    // Get form data from request body
+    const { name, email, subject, message } = req.body;
+
+    // Create a Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'oymosuemmanuel@gmail.com',
+            pass: 'Olawalee_.146'
+        }
+    });
+
+    // Email content
+    const mailOptions = {
+        from: email,
+        to: 'oymosuemmanuel@gmail.com',
+        subject: subject,
+        text: `Name: ${name}\nEmail: ${email}\n\nMessage: ${message}`
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+            res.send('Error: Something went wrong');
+        } else {
+            console.log('Email sent: ' + info.response);
+            res.send('Message sent successfully!');
+        }
+    });
+});
+
+
 app.all('*', (req, res, next) => {
     next(new ExpressError("Page Not Found", 404 ))
 })
@@ -99,7 +135,8 @@ app.use((err, req, res, next) => {
     if (!err.message) err.message = 'Oh No, Something Went Wrong!'
     res.status(statusCode).render('error', { err })
 })
-*/
+
+
 
 // Server
 const port = process.env.PORT || 4500;

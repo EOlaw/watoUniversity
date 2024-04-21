@@ -10,8 +10,9 @@ const Document = require('../models/documentModel');
 const homeController = {
     homepage: async (req, res) => {
         try {
-            const courses = await Course.find();
+            const courses = await Course.find().populate('instructors', 'firstname lastname')
             const courseTags = await Course.distinct("tags"); // Get all unique tags
+            
             res.render('home/homepage', { courses: courses, courseTags: courseTags })
             //res.status(200).json({ courses: courses });
         } catch (err) {

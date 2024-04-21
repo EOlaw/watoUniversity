@@ -15,6 +15,7 @@ const courseSchema = new Schema({
   instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   schedules: [{
+    year: { type: String, enum: ['Freshman', 'Sophomore', 'Junior', 'Senior'] }, // Add year field
     semester: String,
     startDate: Date,
     endDate: Date,

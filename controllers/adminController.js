@@ -206,7 +206,7 @@ const adminControllers = {
   // Get Courses
   getCourses: async (req, res, next) => {
     try {
-        const courses = await Course.find();
+        const courses = await Course.find().populate('instructors', 'firstname lastname')
         const courseTags = await Course.distinct("tags"); // Get all unique tags
         res.render('courses/viewCourses', { courses: courses, courseTags: courseTags });
         //res.status(200).json({ courses: courses });
