@@ -69,7 +69,7 @@ const userControllers = {
                 }
                 // Redirect based on user's role
                 if (role === 'student' || role === 'parent') {
-                    return res.redirect('/admin/courses');
+                    return res.redirect(`/user/${user._id}/student-dashboard`);
                 } else if (role === 'instructor' || role === 'center') {
                     return res.redirect(`/user/${user._id}/instructor-dashboard`); // Use user._id instead of userId
                 } else {
@@ -285,6 +285,33 @@ const userControllers = {
             res.render('instructors/dashboard', { user: req.user, courses });
         } catch (err) {
             console.error('Error rendering instructor dashboard:', err);
+            res.status(500).send('Internal Server Error');
+        }
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////// STUDENTS     ////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    renderStudentDashboard: async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            // Fetch user information for the logged-in student
+            const user = await User.findById(userId).populate('enrolledCourses')
+            
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+    
+            // Fetch courses associated with the student
+            const courses = await Course.find({ students: userId }).populate('instructors').populate('students');
+    
+            // Log the courses fetched
+            console.log('Courses for student:', courses);
+    
+            // Render the student dashboard template with course data
+            res.render('students/dashboard', { user, courses });
+        } catch (err) {
+            console.error('Error rendering student dashboard:', err);
             res.status(500).send('Internal Server Error');
         }
     }

@@ -56,22 +56,34 @@
               <a href="/contact" class="nav-item nav-link">Contact</a>
               <a href="/resources" class="nav-item nav-link">Resources</a>
               <a href="/faqs" class="nav-item nav-link">FAQs</a>
-              <a href="/students" class="nav-item nav-link">Student Portal</a>
           </div>
           <% if(!currentUser) {%>
               <a class="nav-item nav-link active" href="/user/login">Login</a>
             <a href="/user/register" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Join Now<i class="fa fa-arrow-right ms-3"></i></a>
-          <% } else {%>
-            <div class="nav-item dropdown">
-              <button type="button" class="btn btn-info">Welcome to Wato, <%= currentUser.firstname %></button>
-              <div class="dropdown-menu fade-down m-0">
-                  <a href="/profile" class="dropdown-item">Profile</a>
-                  <a href="/account-setting" class="dropdown-item">Setting</a>
-                  <a href="/purchase" class="dropdown-item">Purchase</a>
-                  <a href="/user/logout" class="dropdown-item text-danger">Logout</a>
+            <% } else if (currentUser.role === 'instructor') { %>
+              <a href="/user/<%= currentUser._id %>/instructor-dashboard" class="nav-item nav-link">Instructor Portal</a>
+              <div class="nav-item dropdown">
+                <button type="button" class="btn btn-info">Welcome to Wato, <%= currentUser.firstname %></button>
+                <div class="dropdown-menu fade-down m-0">
+                    <a href="/profile" class="dropdown-item">Profile</a>
+                    <a href="/account-setting" class="dropdown-item">Setting</a>
+                    <a href="/purchase" class="dropdown-item">Purchase</a>
+                    <a href="/user/logout" class="dropdown-item text-danger">Logout</a>
+                </div>
               </div>
-            </div>
-            
+              <!-- Rest of the dropdown menu remains the same -->
+          <% } else { %>
+              <a href="/user/<%= currentUser._id %>/student-dashboard" class="nav-item nav-link">Student Portal</a>
+              <div class="nav-item dropdown">
+                <button type="button" class="btn btn-info">Welcome to Wato, <%= currentUser.firstname %></button>
+                <div class="dropdown-menu fade-down m-0">
+                    <a href="/profile" class="dropdown-item">Profile</a>
+                    <a href="/account-setting" class="dropdown-item">Setting</a>
+                    <a href="/purchase" class="dropdown-item">Purchase</a>
+                    <a href="/user/logout" class="dropdown-item text-danger">Logout</a>
+                </div>
+              </div>
+              <!-- Rest of the dropdown menu remains the same -->
           <% } %>
       </div>
     </nav>

@@ -19,14 +19,23 @@ const homeController = {
             res.status(400).json({ error: err.message });
         }
     },
-    services: (req, res, next) => {
-        res.render('home/service')
-    },
     about: (req, res, next) => {
         res.render('home/about')
     },
     contact: (req, res, next) => {
         res.render('home/contact')
+    },
+    resources: (req, res, next) => {
+        res.render('home/resources')
+    },
+    faqs: (req, res, next) => {
+        res.render('home/faqs')
+    },
+    privacy: (req, res, next) => {
+        res.render('home/privacy')
+    },
+    terms: (req, res, next) => {
+        res.render('home/terms')
     }
 }
 

@@ -40,25 +40,30 @@
                 <% if (course.instructors.length > 0) { %>
                     <li class="list-group-item">Instructor: 
                         <% course.instructors.forEach(function(instructor) { %>
-                            <%= capitalizeFirstLetter(instructor.firstname) %> <%= capitalizeFirstLetter(instructor.lastname) %> <% /* Capitalize first letter of firstname and lastname */ %>
+                            <%= capitalizeFirstLetter(instructor.firstname) %> <%= capitalizeFirstLetter(instructor.lastname) %> 
                         <% }) %>
                     </li>
-                <% } %>  
+                <% } %>
+            
                 <% if (course.duration) { %>
                     <li class="list-group-item">Duration: <%= course.duration %></li>
                 <% } %>
+            
                 <% if (course.location) { %>
                     <li class="list-group-item">Location: <%= course.location %></li>
                 <% } %>
+            
                 <% if (course.prerequisites.length > 0) { %>
                     <li class="list-group-item">Prerequisites: <%= course.prerequisites.join(', ') %></li>
                 <% } %>
+            
                 <% if (course.enrollmentLimit) { %>
                     <li class="list-group-item">Enrollment Limit: <%= course.enrollmentLimit %></li>
                 <% } %>
-                <li class="list-group-item">Availability: <%= course.availability %></li>               
-                <li class="list-group-item">Refund: <%= course.refundPolicy %></li>               
-                                              
+            
+                <li class="list-group-item">Availability: <%= course.availability %></li>
+                <li class="list-group-item">Refund: <%= course.refundPolicy %></li>
+            
                 <% if (course.schedules.length > 0) { %>
                     <li class="list-group-item">Schedules: 
                         <% course.schedules.forEach(function(schedule) { %>
@@ -66,8 +71,49 @@
                         <% }) %>
                     </li>
                 <% } %>
+            
+                <% if (course.discounts && course.discounts.length > 0) { %>
+                    <li class="list-group-item">Discounts: 
+                        <% course.discounts.forEach(function(discount) { %>
+                            <p>Code: <%= discount.code %>, Percentage: <%= discount.percentage %>, Expiration Date: <%= discount.expirationDate %></p>
+                        <% }) %>
+                    </li>
+                <% } %>
+            
+                <% if (course.paymentPlans && course.paymentPlans.length > 0) { %>
+                    <li class="list-group-item">Payment Plans: 
+                        <% course.paymentPlans.forEach(function(plan) { %>
+                            <p>Installment Amount: <%= plan.installmentAmount %>, Frequency: <%= plan.frequency %></p>
+                        <% }) %>
+                    </li>
+                <% } %>
+            
+                <% if (course.materials && course.materials.length > 0) { %>
+                    <li class="list-group-item">Materials: 
+                        <% course.materials.forEach(function(material) { %>
+                            <p>Title: <%= material.title %>, URL: <%= material.url %></p>
+                        <% }) %>
+                    </li>
+                <% } %>
+            
+                <% if (course.certification) { %>
+                    <li class="list-group-item">Certification: <%= course.certification %></li>
+                <% } %>
+            
+                <% if (course.level) { %>
+                    <li class="list-group-item">Level: <%= course.level %></li>
+                <% } %>
+            
+                <% if (course.price) { %>
+                    <li class="list-group-item">Price: <%= course.price %></li>
+                <% } %>
+            
+                <% if (course.refundPolicy) { %>
+                    <li class="list-group-item">Refund Policy: <%= course.refundPolicy %></li>
+                <% } %>
                 <!-- Add other relevant information as needed -->
             </ul>
+            
             <% if (currentUser) { %>
                 <% if (course.students.includes(currentUser._id)) { %>
                     <p>You are already enrolled in this course.</p>
@@ -151,19 +197,21 @@
             <% if (currentUser) { %>
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title">Enrollment Options</h5>
+                        <h5 class="card-title">Welcome to Your Student Dashboard, <%= currentUser.username %>!</h5>
                     </div>
                     <div class="card-body">
-                        <p>Welcome, <%= currentUser.username %>!</p>
-                        <p>Explore your options:</p>
+                        <p>Get started with your learning journey:</p>
                         <ul class="list-group">
-                            <li class="list-group-item">View Enrolled Courses</li>
-                            <li class="list-group-item">Browse Available Courses</li>
-                            <li class="list-group-item">Update Profile</li>
+                            <li class="list-group-item">
+                                <a href="/user/enrolled-courses/<%= currentUser._id %>" class="btn btn-primary">View Enrolled Courses</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="/admin/courses" class="btn btn-primary">Browse Available Courses</a>
+                            </li>
+                            <li class="list-group-item">
+                                <button class="btn btn-primary">Update Profile</button>
+                            </li>
                         </ul>
-                    </div>
-                    <div class="card-footer">
-                        <a href="/user/enrolled-courses/<%= currentUser._id %>" class="btn btn-primary">View Enrolled Courses</a>
                     </div>
                 </div>
             <% } else { %>

@@ -4,6 +4,11 @@
     return string.charAt(0).toUpperCase() + string.slice(1);
 } %> 
 
+<header class="container-fluid bg-primary py-5 mb-5 page-header">
+    <div class="container py-5">
+        <h1 class="display-3 text-white text-center">Instructor Dashboard</h1>
+    </div>
+</header>
 
 <div class="container mt-5">
     <div class="row">
@@ -14,7 +19,7 @@
                 <% courses.forEach(course => { %>
                     <div class="card mb-3">
                         <div class="card-header">
-                            <%= course.courseName %>
+                            <a href="/admin/course/<%= course._id %>"><%= course.courseName %></a>
                         </div>
                         <div class="card-body">
                             <h5 class="card-title">Enrolled Students</h5>

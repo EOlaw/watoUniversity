@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const User = require('../models/userModel');
 const userControllers = require('../controllers/userController');
-const { isAuthenticated, isAdmin, isAuthorizedAsInstructor } = require('../controllers/authController');
+const { isAuthenticated, isAdmin, isAuthorizedAsInstructor, isAuthorizedAsStudent } = require('../controllers/authController');
 
 router.route('/register')
     .get(userControllers.renderRegister)
@@ -39,5 +39,10 @@ router.route('/students/:userId/course/:courseId/remove')
 //////////////////////////////  INSTRUCTORS //////////////////////////////////
 router.route('/:userId/instructor-dashboard')
     .get( isAuthorizedAsInstructor, userControllers.renderInstructorDashboard)
+
+
+//////////////////////////////  STUDENTS //////////////////////////////////
+router.route('/:userId/student-dashboard')
+    .get( isAuthorizedAsStudent, userControllers.renderStudentDashboard)
 
 module.exports = router;
