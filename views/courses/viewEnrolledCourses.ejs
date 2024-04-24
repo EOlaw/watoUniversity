@@ -1,28 +1,54 @@
 <% layout('layouts/boilerplate') %>
-
+<!-- Button to go back to previous page -->
+<a href="#!" onclick="goBack()"><h5 class="mb-3"><i class="fas fa-long-arrow-alt-left me-2"></i>Continue shopping</h5></a>
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <h1>Enrolled Courses</h1>
-            <% if (enrolledCourses.length === 0) { %>
-                <p>You are not enrolled in any courses.</p>
-            <% } else { %>
-                <ul class="list-group">
-                    <% enrolledCourses.forEach(function(course) { %>
-                        <li class="list-group-item">
-                            <h3><%= course.courseName %></h3>
-                            <p><%= course.description %></p>
-                            <!-- Add a button/link to remove the course -->
-                            <form action="/user/students/<%= currentUser._id %>/course/<%= course._id %>/remove" method="POST">
-                                <button type="submit" class="btn btn-danger">Remove Course</button>
+    <h1>Enrolled Courses</h1>
+    <% if (enrolledCourses && enrolledCourses.length > 0) { %>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Course Name</th>
+                    <th>Instructors</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% enrolledCourses.forEach(course => { %>
+                    <tr>
+                        <td class="mb-4"><a href="/admin/course/<%= course._id %>"><%= course.courseName %></a></td>
+                        <td>
+                            <% if (course.instructors && course.instructors.length > 0) { %>
+                                <% course.instructors.forEach(instructor => { %>
+                                    <%= instructor.firstname %> <%= instructor.lastname %><br>
+                                <% }); %>
+                            <% } else { %>
+                                N/A
+                            <% } %>
+                        </td>
+                        <td><%= course.description %></td>
+                        <td>
+                            <form action="/user/<%= currentUser._id %>/course/<%= course._id %>/complete" method="POST">
+                                <button type="submit" class="btn btn-success">Complete Course</button>
                             </form>
-                            <% /* Add other relevant information about the course */ %>
-                        </li>
-                    <% }) %>
-                </ul>
-            <% } %>
-        </div>
-    </div>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No courses enrolled.</p>
+    <% } %>
 </div>
+
+<script>
+    // Function to go back to previous page
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+
+
 
 

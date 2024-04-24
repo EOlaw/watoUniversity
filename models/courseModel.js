@@ -60,6 +60,33 @@ const courseSchema = new Schema({
   refundPolicy: { type: String, required: true } // New field: Refund policy for the course
 });
 
+// Method to enroll a student in the course
+courseSchema.methods.enrollStudent = async function(userId) {
+  try {
+      // Check if the user is already enrolled in the course
+      if (this.students.includes(userId)) {
+          throw new Error('User is already enrolled in this course');
+      }
+
+      // Add the user to the list of enrolled students
+      this.students.push(userId);
+
+      // Save the updated course
+      await this.save();
+
+      // Optionally, update the user model to reflect the enrollment
+      const user = await User.findById(userId);
+      if (!user) {
+          throw new Error('User not found');
+      }
+      user.enrolledCourses.push(this._id);
+      await user.save();
+
+      return this; // Return the updated course document
+  } catch (error) {
+      throw error;
+  }
+};
 
 
 

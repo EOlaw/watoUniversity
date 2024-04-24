@@ -1,5 +1,6 @@
 const User = require('../models/userModel')
 const Course = require('../models/courseModel')
+const Cart = require('../models/cartModel')
 
 const userControllers = {
     // Register Page
@@ -140,6 +141,127 @@ const userControllers = {
             res.status(400).json({ error: err.message })
         }
     },
+    addToCart: async (req, res, next) => {
+        try {
+            const { courseId } = req.body;
+            const cart = await Cart.findOneAndUpdate(
+                { user: req.user._id },
+                { $addToSet: { courses: courseId } },
+                { new: true, upsert: true }
+            ).populate('courses');
+            console.log('Cart:', cart);
+            const totalPrice = await cart.calculateTotalPrice();
+            const courses = await Course.find({_id: { $in: cart.courses }});
+            // Redirect to the viewCart route with query parameters
+            res.redirect(`/user/cart/${req.user._id}`)
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    
+    viewCart: async (req, res, next) => {
+        try {
+            const userId = req.params.userId;
+            const user = await User.findById(userId).populate('enrolledCourses');
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            const cart = await Cart.findOne({ user: userId }).populate('courses');
+            console.log('Cart:', cart);
+
+            // Check if cart exists
+            if (!cart) {
+                return res.render('cart/getCart', { cart: null, totalPrice: 0 });
+            }
+    
+            // Fetch course data for each course in the cart
+            const courses = await Promise.all(cart.courses.map(async courseId => {
+                const course = await Course.findById(courseId);
+                return course;
+            }));
+    
+            const totalPrice = await cart.calculateTotalPrice();
+            res.render('cart/viewCart', { cart, totalPrice, currentUser: req.user, enrolledCourses: user.enrolledCourses, courses })
+        } catch (err) {
+            res.status(500).json({ error: err.message })
+        }
+    },
+    removeFromCart: async (req, res, next) => {
+        try {
+            const userId = req.params.userId;
+            const courseId = req.params.courseId; // Assuming courseId is sent in the request body
+    
+            // Find the user's cart
+            const cart = await Cart.findOne({ user: userId });
+    
+            // Check if the cart exists
+            if (!cart) {
+                return res.status(404).json({ error: 'Cart not found' });
+            }
+    
+            // Remove the course from the cart
+            await Cart.updateOne({ _id: cart._id }, { $pull: { courses: courseId } });
+    
+            // Send a success response
+            res.redirect(`/user/cart/${userId}`)
+            //res.status(200).json({ message: 'Course removed from cart successfully' });
+        } catch (error) {
+            // Handle errors
+            res.status(500).json({ error: error.message });
+        }
+    },
+    proceedToCheckout: async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            const user = await User.findById(userId);
+            const cart = await Cart.findOne({ user: userId }).populate('courses');
+    
+            // Check if cart exists
+            if (!cart || !user) {
+                return res.status(404).json({ error: 'Cart or user not found' });
+            }
+    
+            // Iterate over courses in the cart and enroll the user in each course
+            for (const courseId of cart.courses) {
+                const course = await Course.findById(courseId);
+    
+                // Check if user and course exist
+                if (!course) {
+                    return res.status(404).json({ error: `Course with ID ${courseId} not found` });
+                }
+    
+                // Check if the user is an instructor
+                if (user.role === 'instructor' || user.role === 'center') {
+                    return res.status(403).json({ error: 'Instructors are not allowed to enroll in courses' });
+                }
+    
+                // Check if the course is active and has available slots
+                if (course.enrollmentLimit && course.students.length >= course.enrollmentLimit) {
+                    return res.status(400).json({ error: 'The course has reached its enrollment limit' })
+                }
+    
+                // Proceed with enrollment
+                user.enrolledCourses.push(courseId);
+                course.students.push(userId);
+                await Promise.all([user.save(), course.save()]);
+    
+                // Update enrollment limit
+                if (course.enrollmentLimit) {
+                    course.enrollmentLimit--;
+                    await course.save();
+                }
+            }
+    
+            // Clear the user's cart after enrollment
+            cart.courses = [];
+            await cart.save();
+    
+            res.redirect(`/user/enrolled-courses/${userId}`);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    },
+    
     viewEnrolledCourse: async (req, res, next) => {
         try {
             const userId = req.params.userId;
@@ -147,11 +269,29 @@ const userControllers = {
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
-            res.render('courses/viewEnrolledCourses', { enrolledCourses: user.enrolledCourses })
+            const cart = await Cart.findOne({ user: userId }).populate('courses');
+        
+            // Check if cart exists
+            if (!cart) {
+                return res.render('cart/getCart', { cart: null, totalPrice: 0 });
+            }
+    
+            // Fetch course data for each course in the cart
+            const courses = await Promise.all(cart.courses.map(async courseId => {
+                const course = await Course.findById(courseId).populate({
+                    path: 'instructors',
+                    select: 'firstname lastname'
+                });
+                return course;
+            }));
+    
+            const totalPrice = await cart.calculateTotalPrice();
+            res.render('courses/viewEnrolledCourses', { cart, totalPrice, currentUser: req.user, enrolledCourses: user.enrolledCourses, courses })
         } catch (err) {
             res.status(500).json({ error: err.message })
         }
     },
+    
     enrolledUserInCourse: async (req, res, next) => {
         try {
             // Fetch user and course
@@ -192,6 +332,7 @@ const userControllers = {
             res.status(400).json({ error: err.message })
         }
     },
+
     // Mark a course as completed for a User
     completeCourse: async (req, res, next) => {
         try {
@@ -295,9 +436,10 @@ const userControllers = {
     renderStudentDashboard: async (req, res) => {
         try {
             const userId = req.params.userId;
-            // Fetch user information for the logged-in student
-            const user = await User.findById(userId).populate('enrolledCourses')
             
+            // Fetch user information for the logged-in student
+            const user = await User.findById(userId).populate('enrolledCourses');
+    
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
@@ -306,7 +448,8 @@ const userControllers = {
             const courses = await Course.find({ students: userId }).populate('instructors').populate('students');
     
             // Log the courses fetched
-            console.log('Courses for student:', courses);
+            //console.log('Courses for student:', courses);
+            //console.log('User:', user)
     
             // Render the student dashboard template with course data
             res.render('students/dashboard', { user, courses });
@@ -316,6 +459,6 @@ const userControllers = {
         }
     }
     
-    
+
 }
 module.exports = userControllers

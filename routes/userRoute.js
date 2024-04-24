@@ -24,12 +24,23 @@ router.route('/:id')
     .put(isAuthenticated, isAdmin, userControllers.updateUser)
     .delete(isAuthenticated, userControllers.deleteUser)
 
+// Route for adding a course to the cart
+router.route('/cart/')
+    .post(userControllers.addToCart);
+router.route('/cart/:userId')
+    .get(isAuthenticated, userControllers.viewCart)
+router.route('/cart/:userId/remove/:courseId')
+    .get(userControllers.removeFromCart);
+// Route for proceeding to checkout
+router.route('/cart/proceed-to-checkout/:userId')
+    .post(isAuthenticated, userControllers.proceedToCheckout);
+
 router.route('/enrolled-courses/:userId')
     .get(isAuthenticated, userControllers.viewEnrolledCourse)
 router.route('/:userId/course/:courseId/enroll')
-    .post(isAuthenticated, userControllers.enrolledUserInCourse)
+    .post(userControllers.enrolledUserInCourse)
 router.route('/:userId/course/:courseId/complete')
-    .post(isAuthenticated, userControllers.completeCourse)
+    .post(userControllers.completeCourse)
 
 router.route('/students/:userId/course/:courseId/remove')
     .post(isAuthenticated, userControllers.removeStudentFromCourse)

@@ -25,7 +25,7 @@ const dbUrl = process.env.DB_URL
 const homeRoutes = require('./routes/homeRoute')
 const userRoutes = require('./routes/userRoute')
 const adminRoutes = require('./routes/adminRoutes')
-
+//const cartRoutes = require('./routes/cartRoute')
 
 // Set up the database connection
 mongoose.connect(dbUrl);
@@ -90,8 +90,9 @@ app.use((req, res, next) => {
 app.use('/', homeRoutes)
 app.use('/user', userRoutes)
 app.use('/admin', adminRoutes)
+//app.use('/cart', cartRoutes)
 
-// Route to handle form submission
+/* Route to handle form submission
 app.post('/contact', (req, res) => {
     // Get form data from request body
     const { name, email, subject, message } = req.body;
@@ -124,6 +125,7 @@ app.post('/contact', (req, res) => {
         }
     });
 });
+*/
 
 
 app.all('*', (req, res, next) => {

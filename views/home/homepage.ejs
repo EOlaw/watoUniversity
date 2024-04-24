@@ -85,7 +85,7 @@
                                 <h1 class="display-3 text-white animated slideInDown">The Best Online Learning Platform</h1>
                                 <p class="fs-5 text-white mb-4 pb-2">Discover the best online courses tailored to your learning needs. Whether you're a beginner or an expert, our platform offers a wide range of courses to help you enhance your skills and achieve your goals.</p>
                                 <a href="#" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="#" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
+                                <a href="/user/register" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                                 <h1 class="display-3 text-white animated slideInDown">Get Educated Online From Your Home</h1>
                                 <p class="fs-5 text-white mb-4 pb-2">Embark on your online learning journey from the comfort of your home. With our platform, you have access to top-quality courses designed to expand your knowledge and skills. Join us today and take the first step towards your educational goals.</p>
                                 <a href="#" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="#" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
+                                <a href="/user/register" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
                             </div>
                         </div>
                     </div>
@@ -245,11 +245,9 @@
                         <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="<%= i * 0.2 + 0.1 %>s">
                             <div class="course-item bg-light">
                                 <div class="position-relative overflow-hidden">
-                                    <!-- Check if the 'image' property exists before accessing 'url' -->
-                                    <% if (course.image && course.image.url) { %>
-                                        <img class="img-fluid" src="<%= course.image.url %>" alt="<%= course.courseName %>">
+                                    <% if (course.images.length > 0 && course.images[0].url) { %>
+                                        <a href="/admin/course/<%= course._id %>"><img class="img-fluid" src="<%= course.images[0].url %>" alt="<%= course.courseName %> Image"></a>
                                     <% } else { %>
-                                        <!-- Provide a placeholder image if 'image' or 'url' is missing -->
                                         <a href="/admin/course/<%= course._id %>"><img class="img-fluid" src="https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg" alt="Course Image"></a>
                                     <% } %>
                                     <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">

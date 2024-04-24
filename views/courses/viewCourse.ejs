@@ -1,7 +1,5 @@
 <% layout('layouts/boilerplate') %>
 
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
 /* Star Rating Styles */
 .star-rating {
@@ -24,7 +22,6 @@
 }
 
 </style>
-
 
 <% function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -105,7 +102,7 @@
                 <% } %>
             
                 <% if (course.price) { %>
-                    <li class="list-group-item">Price: <%= course.price %></li>
+                    <li class="list-group-item">Price: $<%= course.price %></li>
                 <% } %>
             
                 <% if (course.refundPolicy) { %>
@@ -118,10 +115,19 @@
                 <% if (course.students.includes(currentUser._id)) { %>
                     <p>You are already enrolled in this course.</p>
                 <% } else { %>
-                    <!-- User is logged in and not already enrolled, show enrollment button -->
+                    <!-- -->
+                    <form action="/user/cart/" method="POST">
+                        <input type="hidden" name="courseId" value="<%= course._id %>">
+                        <button type="submit" class="btn btn-primary mt-3">Enroll in Course</button>
+                    </form>
+                    
+                    
+                    <!-- User is logged in and not already enrolled, show enrollment button 
                     <form action="/user/<%= currentUser._id %>/course/<%= course._id %>/enroll" method="POST">
                         <button type="submit" class="btn btn-primary mt-3">Enroll in Course</button>
                     </form>
+                    -->
+                    
                 <% } %>
             <% } else { %>
                 <!-- User is not logged in, show login button -->
@@ -209,8 +215,9 @@
                                 <a href="/admin/courses" class="btn btn-primary">Browse Available Courses</a>
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-primary">Update Profile</button>
+                                <a href="/user/cart/<%= currentUser._id %>"><button class="btn btn-primary">View Cart</button></a>
                             </li>
+                            
                         </ul>
                     </div>
                 </div>

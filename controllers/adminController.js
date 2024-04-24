@@ -206,9 +206,10 @@ const adminControllers = {
   // Get Courses
   getCourses: async (req, res, next) => {
     try {
+      const user = await User.findById(req.params.id);
         const courses = await Course.find().populate('instructors', 'firstname lastname')
         const courseTags = await Course.distinct("tags"); // Get all unique tags
-        res.render('courses/viewCourses', { courses: courses, courseTags: courseTags });
+        res.render('courses/viewCourses', { courses: courses, courseTags: courseTags, user: user });
         //res.status(200).json({ courses: courses });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -237,6 +238,7 @@ const adminControllers = {
 
       // Render the viewCourse template with the course data
       res.render('courses/viewCourse', { course: course, isAdmin: isAdmin });
+      //res.status(400).json({ course: course });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
